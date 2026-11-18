@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Моя школа — Облако</title>
+    <style>
+        :root {
+            --bg-main: #f4f7fb;
+            --text-main: #0b1f33;
+            --text-gray: #66727f;
+            --blue-gradient: linear-gradient(270deg, #28bbfa, #0856cc);
+            --shadow: 0 2px 8px rgba(12, 41, 117, 0.06);
+            --radius: 16px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-main); color: var(--text-main); padding-bottom: 70px; }
+        
+        .header { background: #fff; padding: 16px; position: sticky; top: 0; z-index: 10; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+        .logo-title { font-size: 20px; font-weight: 800; }
+        .user-name { font-size: 14px; font-weight: 600; color: #0e69d5; cursor: pointer; }
+
+        .container { padding: 16px; max-width: 800px; margin: 0 auto; }
+        .page-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; text-align: center; line-height: 1.3; color: #0b1f33; }
+
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; display: flex; justify-content: space-around; padding: 8px 0; border-top: 1px solid #eef2f7; z-index: 100; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-gray); font-size: 10px; cursor: pointer; width: 25%; }
+        .nav-item.active { color: #0e69d5; font-weight: 600; }
+        .nav-icon { font-size: 22px; }
+
+        .card { background: #fff; border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); margin-bottom: 12px; }
+        
+        .inner-tabs { display: flex; overflow-x: auto; gap: 8px; margin-bottom: 16px; padding-bottom: 4px; scrollbar-width: none; }
+        .inner-tabs::-webkit-scrollbar { display: none; }
+        .inner-tab { padding: 8px 16px; background: #fff; border-radius: 20px; font-size: 14px; font-weight: 500; color: var(--text-gray); cursor: pointer; white-space: nowrap; border: 1px solid #e5eaf5; box-shadow: 0 1px 3px rgba(0,0,0,0.02); transition: 0.2s; }
+        .inner-tab.active { background: var(--blue-gradient); color: #fff; border-color: transparent; box-shadow: 0 4px 10px rgba(8, 86, 204, 0.3); }
+
+        .feed-date-badge { text-align: center; font-size: 12px; font-weight: 600; color: var(--text-gray); margin: 16px 0 12px; background: #eef2f7; padding: 6px 12px; border-radius: 12px; display: inline-block; position: relative; left: 50%; transform: translateX(-50%); }
+        .feed-section-title { font-size: 16px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .feed-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #eef2f7; }
+        .feed-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .feed-row-title { font-size: 15px; font-weight: 600; }
+        .feed-row-text { font-size: 13px; color: var(--text-gray); margin-top: 4px; }
+
+        .event-banner { background: linear-gradient(135deg, #fff0f5, #ffe4e1); border-left: 4px solid #ee3f58; padding: 12px; border-radius: 8px; margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
+        .event-icon { font-size: 24px; }
+        .event-title { font-size: 14px; font-weight: 700; color: #ee3f58; }
+        .event-text { font-size: 12px; color: #333; }
+
+        .hw-item { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #eef2f7; padding: 12px 0; }
+        .hw-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .hw-subject { font-size: 15px; font-weight: 600; }
+        .hw-text { font-size: 14px; color: var(--text-gray); margin-top: 4px; }
+        .hw-check { width: 28px; height: 28px; border-radius: 50%; border: 2px solid #d0d7e2; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; color: transparent; font-size: 16px; flex-shrink: 0; margin-left: 12px; }
+        .hw-check.done { background: #e5f0fd; border-color: #0e69d5; color: #0e69d5; }
+
+        .mark-row { display: flex; align-items: center; gap: 12px; background: #fff; border-radius: 12px; padding: 12px; box-shadow: var(--shadow); margin-bottom: 8px; }
+        .mark-circle { width: 40px; height: 40px; border-radius: 10px; border: 1px solid rgba(14, 105, 213, 0.2); display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; flex-shrink: 0; }
+        .mark-subject { font-size: 15px; font-weight: 600; }
+        .mark-type { font-size: 12px; color: var(--text-gray); margin-top: 2px; }
+        
+        .bell-schedule { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
+        .bell-row { display: flex; justify-content: space-between; font-size: 13px; color: var(--text-gray); padding: 4px 8px; border-radius: 6px; background: #f9f9f9; }
+        .bell-row.current { background: #e5f0fd; font-weight: 600; color: #0e69d5; }
+        .lesson-list-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eef2f7; padding: 12px 0; }
+        .lesson-list-item:last-child { border-bottom: none; padding-bottom: 0; }
+        .lesson-info { font-size: 15px; font-weight: 600; }
+        .lesson-time { font-size: 13px; color: var(--text-gray); margin-top: 4px; }
+        .lesson-room { font-size: 13px; color: var(--text-gray); background: #eef2f7; padding: 4px 8px; border-radius: 8px; }
+
+        .profile-badge { display: inline-block; padding: 4px 12px; background: #e5f0fd; color: #0e69d5; border-radius: 12px; font-size: 12px; font-weight: 600; margin-top: 8px; }
+
+        .auth-overlay { position: fixed; inset: 0; background: var(--bg-main); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 16px; }
+        .auth-card { background: #fff; border-radius: 20px; padding: 24px; width: 100%; max-width: 400px; box-shadow: 0 8px 32px rgba(12, 41, 117, 0.12); }
+        .auth-card h2 { text-align: center; margin-bottom: 20px; font-size: 20px; }
+        .field { margin-bottom: 16px; display: flex; flex-direction: column; gap: 6px; }
+        .field label { font-size: 13px; color: var(--text-gray); }
+        .field input, .field select { padding: 12px; border: 1px solid #d0d7e2; border-radius: 8px; font-size: 16px; outline: none; }
+        .btn-submit { background: var(--blue-gradient); color: #fff; border: none; border-radius: 8px; padding: 14px; cursor: pointer; font-size: 16px; font-weight: 600; width: 100%; margin-top: 8px; }
+        
+        .journal-controls { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 12px; margin-bottom: 12px; scrollbar-width: none; align-items: center; }
+        .journal-controls select, .journal-controls input { padding: 8px; border: 1px solid #ccc; border-radius: 8px; font-size: 14px; }
+        
+        .btn-lottery { background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; border: none; padding: 8px 12px; border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 6px; white-space: nowrap; box-shadow: 0 2px 8px rgba(245, 124, 0, 0.3); }
+        
+        .class-avg-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; background: #fff; padding: 12px; border-radius: 12px; box-shadow: var(--shadow); font-size: 14px; font-weight: 600; }
+        .progress-bg { flex: 1; height: 8px; background: #eef2f7; border-radius: 4px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #28bbfa, #0856cc); border-radius: 4px; transition: width 0.3s; }
+
+        .table-wrapper { width: 100%; overflow-x: auto; background: #fff; border: 1px solid #ccc; border-radius: 8px; }
+        .excel-table { border-collapse: collapse; width: 100%; table-layout: auto; }
+        
+        .excel-table th, .excel-table td { 
+            border: 1px solid #ccc; 
+            text-align: center; 
+            padding: 0; 
+            height: 36px; 
+            background: #e2efda; 
+            font-size: 11px; 
+        }
+        .excel-table th { background: #d9ead3; font-weight: 600; padding: 4px 2px; white-space: nowrap; font-size: 10px; }
+        
+        .excel-table td.student-name { 
+            position: sticky; 
+            left: 0; 
+            background: #d9ead3; 
+            font-weight: 700; 
+            text-align: left; 
+            padding-left: 4px; 
+            min-width: 100px; 
+            max-width: 100px; 
+            z-index: 2; 
+            font-size: 11px; 
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+        }
+        
+        .excel-table th.avg-col, .excel-table td.avg-col { 
+            background: #f4f4f4; 
+            font-weight: bold; 
+            width: 40px; 
+            min-width: 40px; 
+            font-size: 13px; 
+            color: #0e69d5; 
+            border-left: 2px solid #a0a0a0; 
+        }
+
+        .student-cell-wrapper { display: flex; align-items: center; gap: 4px; padding-left: 4px; }
+        .avatar-mini { width: 20px; height: 20px; border-radius: 50%; background: #fff; color: #333; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; border: 1px solid #ccc; flex-shrink: 0; }
+        
+        .lottery-highlight { background: #fff3cd !important; transition: 0.3s; }
+
+        .excel-input { width: 100%; height: 36px; border: none; text-align: center; font-size: 14px; font-weight: bold; background: transparent; outline: none; padding: 0; }
+        .excel-input:focus { background: #fff; box-shadow: inset 0 0 0 2px #2f8dfc; }
+        .weight-badge { position: absolute; top: 0; right: 0; background: #ff9800; color: #fff; font-size: 9px; border-radius: 50%; width: 14px; height: 14px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        
+        .hidden { display: none !important; }
+        .empty-state { text-align: center; color: var(--text-gray); padding: 40px 0; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+    <header class="header" id="main-header">
+        <div class="logo-title">МОЯ ШКОЛА</div>
+        <div class="user-name" id="header-user"></div>
+    </header>
+
+    <main class="container" id="app"></main>
+    <nav class="bottom-nav hidden" id="bottom-nav"></nav>
+
+    <div id="auth-screen" class="auth-overlay hidden">
+        <div class="auth-card">
+            <h2>Вход в систему</h2>
+            <form onsubmit="handleAuth(event)">
+                <div class="field"><label>Логин</label><input type="text" id="auth-login" required placeholder="student1 или teacher"></div>
+                <div class="field"><label>Пароль</label><input type="password" id="auth-password" required placeholder="****"></div>
+                <button type="submit" class="btn-submit">Войти</button>
+            </form>
+            <div style="font-size: 12px; color: #888; text-align: center; margin-top: 16px;">
+                Ученик: <b>student1 / student1</b><br>Учитель: <b>teacher / teacher</b>
+            </div>
+        </div>
+    </div>
+
+    <!-- ПОДКЛЮЧАЕМ FIREBASE (СОВМЕСТИМАЯ ВЕРСИЯ) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+<script>
+    // ВАШ КОНФИГ
+    const firebaseConfig = {
+        apiKey: "AIzaSyAqX7nuovxJWKUAKiRSLn4EU4W9KQyBIs4",
+        authDomain: "my-school-61f15.firebaseapp.com",
+        databaseURL: "https://my-school-61f15-default-rtdb.firebaseio.com",
+        projectId: "my-school-61f15",
+        storageBucket: "my-school-61f15.firebasestorage.app",
+        messagingSenderId: "846029174847",
+        appId: "1:846029174847:web:c0d9799e220e195ab7e08a",
+        measurementId: "G-VGHC6VQJ27"
+    };
+
+    // Инициализация Firebase (Compat версия)
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+    const dbRef = database.ref('school_data');
+
+    let db = { users: [], lessons: [], homework: [], marks: [] };
+    let user = JSON.parse(localStorage.getItem('school_user')) || null;
+    
+    let currentTab = 'feed';
+    let teacherInnerTab = 'grades'; 
+    let selectedDate = getToday();
+    let journalSubject = 'Русский язык';
+    let journalDate = getToday();
+    let lotteryStudentId = null;
+
+    const SUBJECTS_LIST = ['Русский язык', 'Математика', 'Литер. чтение', 'Окруж. мир', 'ИЗО', 'Труд(технология)', 'Физкультура', 'Англ. яз.', 'Музыка'];
+    
+    const BELL_SCHEDULE = [
+        { num: 1, start: '08:10', end: '08:50' },
+        { num: 2, start: '09:00', end: '09:40' },
+        { num: 3, start: '10:00', end: '10:40' },
+        { num: 4, start: '11:00', end: '11:40' },
+        { num: 5, start: '11:50', end: '12:30' }
+    ];
+
+    function getWorkTypes(subject) {
+        if (subject === 'Русский язык') return ['Соч.', 'Изл.', 'Дикт.', 'К/Р', 'С/Р', 'Пров.', 'Сл/Д', 'Отв.'];
+        if (subject === 'Математика') return ['К/Р', 'С/Р', 'К/С', 'Отв.', 'Раб.', 'Вх.К/Р', 'Итог.', 'Прав.'];
+        if (subject === 'Литер. чтение') return ['Отв.', 'Чт.', 'Пер.', 'Тест', 'Д/З'];
+        if (subject === 'Окруж. мир') return ['Отв.', 'Тест', 'Пр.', 'Докл.', 'Д/З'];
+        return ['Отв.', 'Пр.', 'Тест', 'Д/З'];
+    }
+
+    const defaultDB = {
+        users: [
+            { id: 'u1', login: 'admin', pass: 'admin', role: 'admin', name: 'Администратор', className: '' },
+            { id: 'u2', login: 'teacher', pass: 'teacher', role: 'teacher', name: 'Учитель', className: '' },
+            { id: 'u3', login: 'student1', pass: 'student1', role: 'student', name: 'Антон', className: '3 «В» класс' },
+            { id: 'u4', login: 'student2', pass: 'student2', role: 'student', name: 'Алексей', className: '3 «В» класс' },
+            { id: 'u5', login: 'student3', pass: 'student3', role: 'student', name: 'Анастасия', className: '3 «В» класс' },
+            { id: 'u6', login: 'student4', pass: 'student4', role: 'student', name: 'Андрей', className: '3 «В» класс' },
+            { id: 'u7', login: 'student5', pass: 'student5', role: 'student', name: 'Анна', className: '3 «В» класс' },
+            { id: 'u8', login: 'student6', pass: 'student6', role: 'student', name: 'Борис', className: '3 «В» класс' },
+            { id: 'u9', login: 'student7', pass: 'student7', role: 'student', name: 'Виктория', className: '3 «В» класс' },
+            { id: 'u10', login: 'student8', pass: 'student8', role: 'student', name: 'Владислав', className: '3 «В» класс' },
+            { id: 'u11', login: 'student9', pass: 'student9', role: 'student', name: 'Дарья', className: '3 «В» класс' },
+            { id: 'u12', login: 'student10', pass: 'student10', role: 'student', name: 'Денис', className: '3 «В» класс' },
+            { id: 'u13', login: 'student11', pass: 'student11', role: 'student', name: 'Дмитрий', className: '3 «В» класс' },
+            { id: 'u14', login: 'student12', pass: 'student12', role: 'student', name: 'Егор', className: '3 «В» класс' },
+            { id: 'u15', login: 'student13', pass: 'student13', role: 'student', name: 'Екатерина', className: '3 «В» класс' },
+            { id: 'u16', login: 'student14', pass: 'student14', role: 'student', name: 'Елена', className: '3 «В» класс' },
+            { id: 'u17', login: 'student15', pass: 'student15', role: 'student', name: 'Иван', className: '3 «В» класс' },
+            { id: 'u18', login: 'student16', pass: 'student16', role: 'student', name: 'Игорь', className: '3 «В» класс' },
+            { id: 'u19', login: 'student17', pass: 'student17', role: 'student', name: 'Ирина', className: '3 «В» класс' },
+            { id: 'u20', login: 'student18', pass: 'student18', role: 'student', name: 'Кирилл', className: '3 «В» класс' },
+            { id: 'u21', login: 'student19', pass: 'student19', role: 'student', name: 'Ксения', className: '3 «В» класс' },
+            { id: 'u22', login: 'student20', pass: 'student20', role: 'student', name: 'Максим', className: '3 «В» класс' },
+            { id: 'u23', login: 'student21', pass: 'student21', role: 'student', name: 'Маргарита', className: '3 «В» класс' },
+            { id: 'u24', login: 'student22', pass: 'student22', role: 'student', name: 'Михаил', className: '3 «В» класс' },
+            { id: 'u25', login: 'student23', pass: 'student23', role: 'student', name: 'Наталья', className: '3 «В» класс' },
+            { id: 'u26', login: 'student24', pass: 'student24', role: 'student', name: 'Никита', className: '3 «В» класс' },
+            { id: 'u27', login: 'student25', pass: 'student25', role: 'student', name: 'Ольга', className: '3 «В» класс' }
+        ],
+        lessons: [],
+        homework: [],
+        marks: [] 
+    };
+
+    // ПРОВЕРКА ПРИ СТАРТЕ (однократно)
+    dbRef.once('value').then((snapshot) => {
+        const data = snapshot.val();
+        if (!data || !data.users || data.users.length < 5) {
+            console.log("База пуста. Заполняем...");
+            dbRef.set({ 
+                users: defaultDB.users, 
+                lessons: [], 
+                homework: [], 
+                marks: [] 
+            });
+        }
+    });
+
+    // СЛУШАЕМ ИЗМЕНЕНИЯ (Синхронизация)
+    dbRef.on('value', (snapshot) => {
+        const data = snapshot.val();
+        if (data && data.users) {
+            db = data;
+            if (user) render();
+        }
+    });
+
+    function saveDB() {
+        dbRef.set(db).catch((error) => {
+            console.error("Ошибка:", error);
+            alert("Ошибка сохранения! Проверьте интернет.");
+        });
+    }
+
+    function getToday() {
+        const d = new Date();
+        return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+    }
+    function saveUser(u) { user = u; localStorage.setItem('school_user', JSON.stringify(u)); }
+    function logout() { localStorage.removeItem('school_user'); user = null; render(); }
+    function uid() { return Math.random().toString(36).substr(2, 9); }
+
+    function formatDate(isoDate) {
+        const today = getToday();
+        const d = new Date(isoDate);
+        const months = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+        if (isoDate === today) return `Сегодня, ${d.getDate()} ${months[d.getMonth()]}`;
+        return `${d.getDate()} ${months[d.getMonth()]}`;
+    }
+
+    function isCurrentLesson(timeStart, timeEnd) {
+        const now = new Date();
+        const currentTime = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+        return currentTime >= timeStart && currentTime <= timeEnd;
+    }
+
+    function handleAuth(e) {
+        e.preventDefault();
+        const login = document.getElementById('auth-login').value;
+        const pass = document.getElementById('auth-password').value;
+        const u = db.users.find(u => u.login === login && u.pass === pass);
+        if (!u) return alert('Неверный логин или пароль');
+        saveUser(u);
+        render();
+    }
+
+    // --- РЕНДЕР ---
+    function render() {
+        const authScreen = document.getElementById('auth-screen');
+        const bottomNav = document.getElementById('bottom-nav');
+        const headerUser = document.getElementById('header-user');
+        const app = document.getElementById('app');
+
+        if (!user) {
+            authScreen.classList.remove('hidden');
+            bottomNav.classList.add('hidden');
+            headerUser.innerHTML = '';
+            app.innerHTML = '';
+            return;
+        }
+
+        authScreen.classList.add('hidden');
+        bottomNav.classList.remove('hidden');
+        headerUser.innerHTML = `<span onclick="switchTab('profile')">${user.name} 👤</span>`;
+
+        if (user.role === 'teacher' || user.role === 'admin') {
+            if (currentTab !== 'journal' && currentTab !== 'profile') currentTab = 'journal';
+            bottomNav.innerHTML = `
+                <div class="nav-item ${currentTab==='journal'?'active':''}" onclick="switchTab('journal')"><div class="nav-icon">📓</div><div>Журнал</div></div>
+                <div class="nav-item ${currentTab==='profile'?'active':''}" onclick="switchTab('profile')"><div class="nav-icon">⚙️</div><div>Профиль</div></div>
+            `;
+        } else {
+            if (!['feed', 'schedule', 'homework', 'marks', 'final', 'profile'].includes(currentTab)) currentTab = 'feed';
+            bottomNav.innerHTML = `
+                <div class="nav-item ${currentTab==='feed'?'active':''}" onclick="switchTab('feed')"><div class="nav-icon">🧺</div><div>Лента</div></div>
+                <div class="nav-item ${currentTab==='schedule'?'active':''}" onclick="switchTab('schedule')"><div class="nav-icon">📅</div><div>Расписание</div></div>
+                <div class="nav-item ${currentTab==='homework'?'active':''}" onclick="switchTab('homework')"><div class="nav-icon">📚</div><div>Задания</div></div>
+                <div class="nav-item ${currentTab==='marks'?'active':''}" onclick="switchTab('marks')"><div class="nav-icon">⭐</div><div>Оценки</div></div>
+                <div class="nav-item ${currentTab==='final'?'active':''}" onclick="switchTab('final')"><div class="nav-icon">📊</div><div>Итоговые</div></div>
+            `;
+        }
+
+        if (currentTab === 'journal') renderMobileTeacher(app);
+        else if (currentTab === 'profile') renderProfile(app);
+        else if (currentTab === 'feed') renderFeed(app);
+        else if (currentTab === 'schedule') renderSchedule(app);
+        else if (currentTab === 'homework') renderHomework(app);
+        else if (currentTab === 'marks') renderMarks(app);
+        else if (currentTab === 'final') renderFinal(app);
+    }
+
+    function switchTab(tab) { currentTab = tab; render(); }
+
+    // --- КОМПОНЕНТЫ УЧИТЕЛЯ ---
+    function renderMobileTeacher(app) {
+        const tabsHtml = `
+            <div class="inner-tabs">
+                <div class="inner-tab ${teacherInnerTab==='grades'?'active':''}" onclick="teacherInnerTab='grades'; render();">Оценки</div>
+                <div class="inner-tab ${teacherInnerTab==='schedule'?'active':''}" onclick="teacherInnerTab='schedule'; render();">Расписание</div>
+                <div class="inner-tab ${teacherInnerTab==='hw'?'active':''}" onclick="teacherInnerTab='hw'; render();">Д/З</div>
+            </div>
+        `;
+
+        let contentHtml = '';
+
+        if (teacherInnerTab === 'grades') {
+            const students = db.users.filter(u => u.role === 'student');
+            const workTypes = getWorkTypes(journalSubject);
+            
+            const current = new Date(journalDate);
+            let dates = [];
+            for(let i=-1; i<=2; i++) {
+                let d = new Date(current);
+                d.setDate(current.getDate() + i);
+                dates.push({
+                    iso: d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'),
+                    label: d.getDate() + '.' + String(d.getMonth()+1).padStart(2,'0')
+                });
+            }
+
+            let totalSum = 0, totalCount = 0;
+            students.forEach(s => {
+                const marks = db.marks.filter(m => m.studentId === s.id && m.subject === journalSubject);
+                marks.forEach(m => {
+                    const v = parseFloat(m.value);
+                    if(!isNaN(v)) { totalSum += v; totalCount++; }
+                });
+            });
+            const classAvg = totalCount > 0 ? (totalSum / totalCount).toFixed(1) : '—';
+            const progressPercent = (parseFloat(classAvg) / 5) * 100 || 0;
+
+            contentHtml = `
+                <div class="journal-controls">
+                    <select onchange="journalSubject=this.value; render();">
+                        ${SUBJECTS_LIST.map(s => `<option value="${s}" ${s === journalSubject ? 'selected' : ''}>${s}</option>`).join('')}
+                    </select>
+                    <button class="btn-lottery" onclick="runLottery()">🎲</button>
+                </div>
+
+                <div style="display:flex; gap:6px; overflow-x:auto; margin-bottom:12px;">
+                    ${dates.map(d => `
+                        <button class="cal-btn ${d.iso === journalDate ? 'active' : ''}" style="width: 50px; height: 44px; font-size: 12px; padding: 2px; border-radius: 8px; border: 1px solid #ccc; background: ${d.iso === journalDate ? '#0e69d5' : '#fff'}; color: ${d.iso === journalDate ? '#fff' : '#000'};" onclick="journalDate='${d.iso}'; render();">
+                            ${d.label}
+                        </button>
+                    `).join('')}
+                </div>
+
+                <div class="class-avg-bar">
+                    <span>Ср. балл:</span>
+                    <div class="progress-bg"><div class="progress-fill" style="width: ${progressPercent}%"></div></div>
+                    <span style="color: #0e69d5; font-size: 16px;">${classAvg}</span>
+                </div>
+                
+                <div class="table-wrapper">
+                    <table class="excel-table">
+                        <thead>
+                            <tr>
+                                <th class="student-name">Ученик</th>
+                                ${workTypes.map(wt => `<th>${wt}</th>`).join('')}
+                                <th class="avg-col">Ср.</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${students.map(s => {
+                                const sMarks = db.marks.filter(m => m.studentId === s.id && m.subject === journalSubject);
+                                let sum = 0, weights = 0;
+                                sMarks.forEach(m => {
+                                    const v = parseFloat(m.value);
+                                    if (!isNaN(v)) { sum += v * (m.weight || 1); weights += (m.weight || 1); }
+                                });
+                                const studentAvg = weights > 0 ? (sum / weights).toFixed(1) : '—';
+                                const isWinner = lotteryStudentId === s.id;
+                                const rowClass = isWinner ? 'lottery-highlight' : '';
+
+                                return `
+                                <tr class="${rowClass}">
+                                    <td class="student-name">
+                                        <div class="student-cell-wrapper">
+                                            <div class="avatar-mini">${s.name.charAt(0)}</div>
+                                            <span>${s.name}</span>
+                                        </div>
+                                    </td>
+                                    ${workTypes.map(wt => {
+                                        const mark = db.marks.find(m => m.studentId === s.id && m.subject === journalSubject && m.date === journalDate && m.type === wt);
+                                        const val = mark ? mark.value : '';
+                                        
+                                        let badge = '';
+                                        if(mark && mark.weight > 1) {
+                                            badge = `<div class="weight-badge" onclick="editWeight(event, '${s.id}', '${journalSubject}', '${journalDate}', '${wt}')">${mark.weight}</div>`;
+                                        }
+
+                                        return `
+                                            <td style="position:relative; width: 38px;">
+                                                ${badge}
+                                                <input type="text" class="excel-input" value="${val}" 
+                                                       onchange="updateMark('${s.id}', '${journalSubject}', '${journalDate}', '${wt}', this.value)"
+                                                       oncontextmenu="editWeight(event, '${s.id}', '${journalSubject}', '${journalDate}', '${wt}')">
+                                            </td>
+                                        `;
+                                    }).join('')}
+                                    <td class="avg-col">${studentAvg}</td>
+                                </tr>
+                            `}).join('')}
+                        </tbody>
+                    </table>
+                </div>
+                <div style="text-align:center; font-size:11px; color:#888; margin-top:12px;">
+                    Долгое нажатие на оценку меняет её вес.
+                </div>
+            `;
+        } 
+        else if (teacherInnerTab === 'schedule') {
+            const allLessons = db.lessons.sort((a,b) => { if(a.date !== b.date) return a.date.localeCompare(b.date); return a.time.localeCompare(b.time); });
+            contentHtml = `
+                <div class="card">
+                    <h3 style="margin-bottom: 12px; font-size: 16px;">Добавить урок</h3>
+                    <form onsubmit="addLessonMobile(event)">
+                        <div class="field"><label>Дата</label><input type="date" name="date" value="${getToday()}" required></div>
+                        <div class="field"><label>Время</label><input type="time" name="time" value="08:10" required></div>
+                        <div class="field"><label>Предмет</label><select name="subject" required>${SUBJECTS_LIST.map(s => `<option value="${s}">${s}</option>`).join('')}</select></div>
+                        <div class="field"><label>Кабинет</label><input type="text" name="room" value="211"></div>
+                        <button type="submit" class="btn-submit">Добавить</button>
+                    </form>
+                </div>
+                <h3 style="margin-bottom: 8px; font-size: 16px;">Список уроков</h3>
+                ${allLessons.length ? allLessons.map(l => `
+                    <div class="lesson-list-item">
+                        <div>
+                            <div class="lesson-info">${l.subject}</div>
+                            <div class="lesson-time">${l.date} в ${l.time}</div>
+                        </div>
+                        <button onclick="deleteLesson('${l.id}')" style="background:none; border:none; color:#ee3f58; font-size:20px;">✕</button>
+                    </div>
+                `).join('') : '<div class="empty-state">Расписание пустое</div>'}
+            `;
+        }
+        else if (teacherInnerTab === 'hw') {
+            const allHw = db.homework.sort((a,b) => b.date.localeCompare(a.date));
+            contentHtml = `
+                <div class="card">
+                    <h3 style="margin-bottom: 12px; font-size: 16px;">Задать Д/З</h3>
+                    <form onsubmit="addHwMobile(event)">
+                        <div class="field"><label>Дата</label><input type="date" name="date" value="${getToday()}" required></div>
+                        <div class="field"><label>Предмет</label><select name="subject" required>${SUBJECTS_LIST.map(s => `<option value="${s}">${s}</option>`).join('')}</select></div>
+                        <div class="field"><label>Задание</label><input type="text" name="text" placeholder="с. 44 №82" required></div>
+                        <button type="submit" class="btn-submit">Сохранить</button>
+                    </form>
+                </div>
+                <h3 style="margin-bottom: 8px; font-size: 16px;">Последние задания</h3>
+                ${allHw.length ? allHw.map(h => `
+                    <div class="hw-item" style="padding: 8px 0;">
+                        <div>
+                            <div class="hw-subject">${h.subject} <span style="font-size:12px; font-weight:normal; color:#888;">${h.date}</span></div>
+                            <div class="hw-text">${h.text}</div>
+                        </div>
+                        <button onclick="deleteHw('${h.id}')" style="background:none; border:none; color:#ee3f58; font-size:20px;">✕</button>
+                    </div>
+                `).join('') : '<div class="empty-state">Заданий нет</div>'}
+            `;
+        }
+
+        app.innerHTML = `
+            <div class="page-title">МБОУ СОШ «Школа №1»<br>им. А.С. Пушкина</div>
+            ${tabsHtml}
+            ${contentHtml}
+        `;
+    }
+
+    function addLessonMobile(e) {
+        e.preventDefault();
+        const fd = new FormData(e.target);
+        const d = Object.fromEntries(fd.entries());
+        db.lessons.push({ id: 'l'+uid(), date: d.date, time: d.time, subject: d.subject, room: d.room, className: '3 «В» класс' });
+        saveDB();
+        alert('Урок добавлен!');
+        e.target.reset();
+        render();
+    }
+    function deleteLesson(id) {
+        if(confirm('Удалить урок?')) {
+            db.lessons = db.lessons.filter(x => x.id !== id);
+            saveDB(); render();
+        }
+    }
+    function addHwMobile(e) {
+        e.preventDefault();
+        const fd = new FormData(e.target);
+        const d = Object.fromEntries(fd.entries());
+        db.homework.push({ id: 'h'+uid(), date: d.date, subject: d.subject, text: d.text, doneBy: [] });
+        saveDB();
+        alert('Д/З добавлено!');
+        e.target.reset();
+        render();
+    }
+    function deleteHw(id) {
+        if(confirm('Удалить задание?')) {
+            db.homework = db.homework.filter(x => x.id !== id);
+            saveDB(); render();
+        }
+    }
+
+    function runLottery() {
+        const students = db.users.filter(u => u.role === 'student');
+        if (students.length === 0) return;
+        let counter = 0;
+        const interval = setInterval(() => {
+            const randomIdx = Math.floor(Math.random() * students.length);
+            lotteryStudentId = students[randomIdx].id;
+            render(); 
+            counter++;
+            if (counter > 10) {
+                clearInterval(interval);
+                const finalIdx = Math.floor(Math.random() * students.length);
+                lotteryStudentId = students[finalIdx].id;
+                render();
+                alert(`🎉 Выбран ученик: ${students[finalIdx].name}!`);
+                setTimeout(() => { lotteryStudentId = null; render(); }, 3000);
+            }
+        }, 100);
+    }
+
+    function playGradeSound(val) {
+        if (val === '5') {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(880, audioCtx.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(1760, audioCtx.currentTime + 0.1);
+                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + 0.3);
+            } catch(e) {}
+        }
+    }
+
+    function updateMark(studentId, subject, date, type, value) {
+        value = value.trim();
+        if (value === '5') playGradeSound('5');
+        const existing = db.marks.find(m => m.studentId === studentId && m.subject === subject && m.date === date && m.type === type);
+        if (existing) {
+            if (value === '') db.marks = db.marks.filter(m => m.id !== existing.id);
+            else existing.value = value;
+        } else if (value !== '') {
+            db.marks.push({ id: 'm'+uid(), studentId, subject, date, value, weight: 1, type: type });
+        }
+        saveDB(); 
+    }
+
+    function editWeight(e, studentId, subject, date, type) {
+        e.preventDefault(); e.stopPropagation();
+        const mark = db.marks.find(m => m.studentId === studentId && m.subject === subject && m.date === date && m.type === type);
+        if (!mark) return;
+        const w = prompt('Вес оценки (1, 2, 3):', mark.weight || 1);
+        if (w && parseInt(w) > 0) { mark.weight = parseInt(w); saveDB(); render(); }
+    }
+
+    // --- КОМПОНЕНТЫ УЧЕНИКА ---
+    function renderFeed(app) {
+        const today = getToday();
+        const hwToday = db.homework.filter(h => h.date === today);
+        const marksToday = db.marks.filter(m => m.date === today && m.studentId === user.id);
+
+        const eventBanner = `
+            <div class="event-banner">
+                <div class="event-icon">📢</div>
+                <div>
+                    <div class="event-title">Скоро каникулы!</div>
+                    <div class="event-text">Последний учебный день — 25 мая. Не забудьте сдать учебники!</div>
+                </div>
+            </div>
+        `;
+
+        app.innerHTML = `
+            <div class="page-title">Лента</div>
+            <div class="feed-date-badge">${formatDate(today)}</div>
+            ${eventBanner}
+            
+            ${hwToday.length ? `
+            <div class="card">
+                <div class="feed-section-title"><span style="color:#2f8dfc">📘</span> Домашние задания</div>
+                ${hwToday.map(h => `<div class="feed-row"><div><div class="feed-row-title">${h.subject}</div><div class="feed-row-text">${h.text}</div></div></div>`).join('')}
+            </div>` : ''}
+            
+            ${marksToday.length ? `
+            <div class="card">
+                <div class="feed-section-title"><span style="color:#2f8dfc">⭐</span> Новые оценки</div>
+                ${marksToday.map(m => `<div class="feed-row"><div style="display:flex; gap:12px; align-items:center;"><div class="mark-circle" style="width:32px;height:32px;font-size:14px;border-radius:8px;">${m.value}</div><div><div class="feed-row-title">${m.subject}</div><div class="feed-row-text">${m.type}</div></div></div></div>`).join('')}
+            </div>` : ''}
+            
+            ${(!hwToday.length && !marksToday.length) ? '<div class="card"><div class="empty-state">На сегодня событий больше нет</div></div>' : ''}
+        `;
+    }
+
+    function renderSchedule(app) {
+        const lessons = db.lessons.filter(l => l.date === selectedDate).sort((a,b) => a.time.localeCompare(b.time));
+        
+        app.innerHTML = `
+            <div class="page-title">Расписание</div>
+            
+            <div class="card">
+                <div class="feed-section-title"><span style="color:#2f8dfc">🔔</span> Школьные звонки</div>
+                <div class="bell-schedule">
+                    ${BELL_SCHEDULE.map(bell => {
+                        const isCurrent = isCurrentLesson(bell.start, bell.end);
+                        return `<div class="bell-row ${isCurrent ? 'current' : ''}"><span>${bell.num} урок</span> <span>${bell.start} — ${bell.end}</span></div>`;
+                    }).join('')}
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="feed-section-title"><span style="color:#2f8dfc">📅</span> Уроки на сегодня</div>
+                ${lessons.length ? lessons.map(l => `
+                    <div class="lesson-item">
+                        <div>
+                            <div class="lesson-subject">${l.subject}</div>
+                            <div class="lesson-time">${l.time}</div>
+                        </div>
+                        <div class="lesson-room">каб. ${l.room}</div>
+                    </div>
+                `).join('') : '<div class="empty-state">Уроков нет</div>'}
+            </div>
+        `;
+    }
+
+    function renderHomework(app) {
+        const hwList = db.homework.filter(h => h.date === selectedDate);
+        app.innerHTML = `
+            <div class="page-title">Задания</div>
+            <div class="card">
+                ${hwList.length ? hwList.map(h => {
+                    const isDone = h.doneBy.includes(user.id);
+                    return `<div class="hw-item"><div><div class="hw-subject">${h.subject}</div><div class="hw-text">${h.text}</div></div><div class="hw-check ${isDone ? 'done' : ''}" onclick="toggleHomework('${h.id}')">✓</div></div>`;
+                }).join('') : '<div class="empty-state">Заданий нет</div>'}
+            </div>
+        `;
+    }
+
+    function renderMarks(app) {
+        let marks = db.marks.filter(m => m.studentId === user.id);
+        const grouped = {};
+        marks.forEach(m => { if (!grouped[m.date]) grouped[m.date] = []; grouped[m.date].push(m); });
+        const sortedDates = Object.keys(grouped).sort((a,b) => b.localeCompare(a));
+
+        app.innerHTML = `
+            <div class="page-title">Оценки</div>
+            ${sortedDates.length ? sortedDates.map(date => `
+                <div class="feed-date-badge">${formatDate(date)}</div>
+                ${grouped[date].map(m => `<div class="mark-row"><div class="mark-circle">${m.value}</div><div><div class="mark-subject">${m.subject}</div><div class="mark-type">${m.type}</div></div></div>`).join('')}
+            `).join('') : '<div class="empty-state">Оценок пока нет</div>'}
+        `;
+    }
+
+    function renderFinal(app) {
+        const SUBJECTS_LIST = ['Русский язык', 'Математика', 'Литер. чтение', 'Окруж. мир', 'ИЗО', 'Труд(технология)', 'Физкультура', 'Англ. яз.', 'Музыка'];
+        app.innerHTML = `
+            <div class="page-title">Итоговые оценки</div>
+            <div class="final-grid">
+                ${SUBJECTS_LIST.map(subj => {
+                    const marks = db.marks.filter(m => m.studentId === user.id && m.subject === subj);
+                    let sum = 0, weights = 0;
+                    marks.forEach(m => { const val = parseFloat(m.value); if (!isNaN(val)) { sum += val * (m.weight || 1); weights += (m.weight || 1); } });
+                    const final = weights > 0 ? Math.round(sum / weights) : '—';
+                    return `<div class="final-card"><div class="final-subject">${subj}</div><div class="final-value">${final}</div></div>`;
+                }).join('')}
+            </div>
+        `;
+    }
+
+    function renderProfile(app) {
+        const isTeacher = user.role === 'teacher' || user.role === 'admin';
+        
+        app.innerHTML = `
+            <div class="page-title">Профиль</div>
+            <div class="card" style="text-align: center; padding: 24px 16px;">
+                <div style="font-size: 64px; margin-bottom: 16px;">${isTeacher ? '👨‍🏫' : '👨‍🎓'}</div>
+                <div style="font-size: 20px; font-weight: 700; margin-bottom: 8px;">${user.name}</div>
+                <div style="font-size: 14px; color: var(--text-gray); margin-bottom: 12px;">${isTeacher ? 'Учитель' : user.className}</div>
+                
+                ${!isTeacher ? `<div class="profile-badge" style="margin-bottom: 24px;">🍲 Питание: Льготное (Завтрак + Обед)</div>` : '<div style="margin-bottom: 24px;"></div>'}
+                
+                <div style="background: #eef2f7; padding: 16px; border-radius: 12px; margin-bottom: 16px; text-align: left;">
+                    <div style="font-size: 14px; font-weight: 600; margin-bottom: 8px;">Синхронизация данных</div>
+                    <div style="font-size: 12px; color: #0e69d5; font-weight: 600;">Все данные сохраняются в облаке Firebase автоматически.</div>
+                </div>
+
+                <button onclick="logout()" class="btn-submit" style="background: #fde8eb; color: #ee3f58; margin-top: 0;">Выйти из аккаунта</button>
+            </div>
+        `;
+    }
+
+    function toggleHomework(id) {
+        const h = db.homework.find(x => x.id === id);
+        if (!h) return;
+        const idx = h.doneBy.indexOf(user.id);
+        if (idx > -1) h.doneBy.splice(idx, 1); else h.doneBy.push(user.id);
+        saveDB(); render();
+    }
+
+    // Запуск при загрузке
+    if (user) render();
+</script>
+</body>
+</html>
