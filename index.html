@@ -7,163 +7,318 @@
     <style>
         :root {
             --bg-main: #f4f7fb;
+            --bg-white: #ffffff;
             --text-main: #0b1f33;
             --text-gray: #66727f;
+            --text-light: #97a4ba;
             --blue-gradient: linear-gradient(270deg, #28bbfa, #0856cc);
-            --shadow: 0 2px 8px rgba(12, 41, 117, 0.06);
+            --shadow: 0 2px 12px rgba(12, 41, 117, 0.08);
             --radius: 16px;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--bg-main); color: var(--text-main); padding-bottom: 70px; }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
+        body { background-color: var(--bg-main); color: var(--text-main); padding-bottom: 20px; }
+        a { text-decoration: none; color: inherit; }
+
+        /* Header & Logo */
+        .header { display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 10; min-height: 64px; }
+        .logo-area { display: flex; align-items: center; user-select: none; width: 250px; }
+        .logo-title { font-family: Arial, sans-serif; font-size: 24px; font-weight: 800; color: #0b1f33; letter-spacing: -0.5px; }
+        .logo-sep { width: 1px; height: 26px; background-color: #aeb8c4; margin: 0 10px; }
+        .logo-sub { font-family: Arial, sans-serif; font-size: 10px; color: #2f8dfc; line-height: 1.1; text-transform: lowercase; font-weight: 500; display: flex; flex-direction: column; }
         
-        /* Шапка */
-        .header { background: #fff; padding: 16px; position: sticky; top: 0; z-index: 10; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
-        .logo-title { font-size: 20px; font-weight: 800; }
-        .user-name { font-size: 14px; font-weight: 600; color: #0e69d5; cursor: pointer; }
+        #header-nav { flex: 1; display: flex; justify-content: center; overflow-x: auto; padding: 0 10px; }
+        .user-area { display: flex; align-items: center; justify-content: flex-end; gap: 12px; width: 250px; }
+        .btn-logout { background: #eef2f7; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 13px; color: var(--text-main); font-weight: 500; transition: 0.2s; }
+        .btn-logout:hover { background: #e5eaf5; }
 
-        .container { padding: 16px; max-width: 800px; margin: 0 auto; }
-        .page-title { font-size: 22px; font-weight: 700; margin-bottom: 16px; text-align: center; }
+        /* Верхнее меню */
+        .top-nav { display: flex; background: #eef2f7; border-radius: 12px; padding: 4px; gap: 4px; }
+        .top-nav-btn { background: transparent; border: none; padding: 8px 16px; border-radius: 8px; font-size: 14px; cursor: pointer; color: var(--text-gray); font-weight: 500; transition: 0.2s; white-space: nowrap; }
+        .top-nav-btn.active { background: #fff; color: var(--text-main); box-shadow: 0 2px 4px rgba(0,0,0,0.08); font-weight: 600; }
 
-        /* Нижнее меню */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; display: flex; justify-content: space-around; padding: 8px 0; border-top: 1px solid #eef2f7; z-index: 100; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-gray); font-size: 10px; cursor: pointer; width: 25%; }
-        .nav-item.active { color: #0e69d5; font-weight: 600; }
-        .nav-icon { font-size: 22px; }
+        /* Main Container */
+        .container { max-width: 1400px; margin: 0 auto; padding: 24px 16px; }
+        .page-header { display: flex; flex-direction: column; align-items: center; margin-bottom: 16px; padding-top: 12px; gap: 16px; position: relative; }
+        .page-title { font-size: 20px; font-weight: 600; }
 
-        /* Карточки */
-        .card { background: #fff; border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); margin-bottom: 12px; }
+        /* Контролы журнала */
+        .journal-controls { display: flex; align-items: center; gap: 16px; background: #fff; padding: 10px 16px; border-radius: 8px; box-shadow: var(--shadow); margin-bottom: 16px; flex-wrap: wrap; justify-content: center; border: 1px solid #d0d7e2; }
+        .journal-controls label { font-size: 13px; font-weight: 600; color: var(--text-main); }
+        .journal-controls select, .journal-controls input[type="date"] { padding: 6px 10px; border: 1px solid #a0a0a0; border-radius: 4px; font-size: 13px; outline: none; font-family: inherit; cursor: pointer; }
+        .btn-reset { background: #fde8eb; color: #ee3f58; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.2s; }
+        .btn-reset:hover { background: #fcc5cb; }
+
+        /* Таблица (Зеленый фон) */
+        .excel-wrapper { width: 100%; overflow-x: auto; background: #fff; border: 1px solid #a0a0a0; }
+        .excel-table { border-collapse: collapse; font-family: Arial, sans-serif; }
         
-        /* Внутренние вкладки (для учителя) */
-        .inner-tabs { display: flex; overflow-x: auto; gap: 8px; margin-bottom: 16px; padding-bottom: 4px; scrollbar-width: none; }
-        .inner-tabs::-webkit-scrollbar { display: none; }
-        .inner-tab { padding: 8px 16px; background: #fff; border-radius: 20px; font-size: 14px; font-weight: 500; color: var(--text-gray); cursor: pointer; white-space: nowrap; border: 1px solid #e5eaf5; box-shadow: 0 1px 3px rgba(0,0,0,0.02); transition: 0.2s; }
-        .inner-tab.active { background: var(--blue-gradient); color: #fff; border-color: transparent; box-shadow: 0 4px 10px rgba(8, 86, 204, 0.3); }
+        /* Базовые стили ячеек */
+        .excel-table th, .excel-table td { 
+            border: 1px solid #a0a0a0;
+            text-align: center; 
+            vertical-align: middle; 
+            padding: 0; 
+            height: 32px;
+            background: #d9ead3; 
+            font-weight: normal; 
+            font-size: 11px; 
+            color: #333; 
+            white-space: nowrap;
+        }
 
-        /* Лента / Задания */
-        .feed-date-badge { text-align: center; font-size: 12px; font-weight: 600; color: var(--text-gray); margin: 16px 0 12px; background: #eef2f7; padding: 6px 12px; border-radius: 12px; display: inline-block; position: relative; left: 50%; transform: translateX(-50%); }
-        .feed-section-title { font-size: 16px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-        .feed-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #eef2f7; }
-        .feed-row:last-child { border-bottom: none; padding-bottom: 0; }
-        .feed-row-title { font-size: 15px; font-weight: 600; }
-        .feed-row-text { font-size: 13px; color: var(--text-gray); margin-top: 4px; }
+        /* Фиксация ширины для компактности (40px в ширину, 32px в высоту) */
+        .journal-table th.day-header,
+        .journal-table td.data-cell,
+        .journal-table th.corner,
+        .journal-table td.row-num {
+            width: 40px !important;
+            min-width: 40px !important;
+            max-width: 40px !important;
+        }
 
-        /* Баннер */
-        .event-banner { background: linear-gradient(135deg, #fff0f5, #ffe4e1); border-left: 4px solid #ee3f58; padding: 12px; border-radius: 8px; margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
-        .event-icon { font-size: 24px; }
-        .event-title { font-size: 14px; font-weight: 700; color: #ee3f58; }
-        .event-text { font-size: 12px; color: #333; }
-
-        .hw-item { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #eef2f7; padding: 12px 0; }
-        .hw-item:last-child { border-bottom: none; padding-bottom: 0; }
-        .hw-subject { font-size: 15px; font-weight: 600; }
-        .hw-text { font-size: 14px; color: var(--text-gray); margin-top: 4px; }
-        .hw-check { width: 28px; height: 28px; border-radius: 50%; border: 2px solid #d0d7e2; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; color: transparent; font-size: 16px; flex-shrink: 0; margin-left: 12px; }
-        .hw-check.done { background: #e5f0fd; border-color: #0e69d5; color: #0e69d5; }
-
-        /* Оценки */
-        .mark-row { display: flex; align-items: center; gap: 12px; background: #fff; border-radius: 12px; padding: 12px; box-shadow: var(--shadow); margin-bottom: 8px; }
-        .mark-circle { width: 40px; height: 40px; border-radius: 10px; border: 1px solid rgba(14, 105, 213, 0.2); display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; flex-shrink: 0; }
-        .mark-subject { font-size: 15px; font-weight: 600; }
-        .mark-type { font-size: 12px; color: var(--text-gray); margin-top: 2px; }
+        /* Настройки заголовков */
+        .journal-table th.day-header {
+            font-size: 9px !important;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: clip;
+            line-height: 1;
+        }
         
-        /* Расписание */
-        .bell-schedule { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
-        .bell-row { display: flex; justify-content: space-between; font-size: 13px; color: var(--text-gray); padding: 4px 8px; border-radius: 6px; background: #f9f9f9; }
-        .bell-row.current { background: #e5f0fd; font-weight: 600; color: #0e69d5; }
-        .lesson-list-item { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eef2f7; padding: 12px 0; }
-        .lesson-list-item:last-child { border-bottom: none; padding-bottom: 0; }
-        .lesson-info { font-size: 15px; font-weight: 600; }
-        .lesson-time { font-size: 13px; color: var(--text-gray); margin-top: 4px; }
-        .lesson-room { font-size: 13px; color: var(--text-gray); background: #eef2f7; padding: 4px 8px; border-radius: 8px; }
+        .excel-table th.corner { background: #c6e0b4; }
 
-        /* Профиль */
-        .profile-badge { display: inline-block; padding: 4px 12px; background: #e5f0fd; color: #0e69d5; border-radius: 12px; font-size: 12px; font-weight: 600; margin-top: 8px; }
+        /* Колонка с именами */
+        .excel-table td.student-name, .excel-table th.student-name { 
+            text-align: left; 
+            padding-left: 8px; 
+            background: #d9ead3; 
+            font-weight: bold; 
+            font-size: 12px; 
+            position: sticky; 
+            left: 40px; /* Сдвиг из-за колонки с номерами */
+            z-index: 2; 
+            border-right: 2px solid #a0a0a0;
+            width: 160px !important;
+            min-width: 160px !important;
+            max-width: 160px !important;
+        }
 
-        /* Авторизация */
-        .auth-overlay { position: fixed; inset: 0; background: var(--bg-main); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 16px; }
-        .auth-card { background: #fff; border-radius: 20px; padding: 24px; width: 100%; max-width: 400px; box-shadow: 0 8px 32px rgba(12, 41, 117, 0.12); }
-        .auth-card h2 { text-align: center; margin-bottom: 20px; font-size: 20px; }
+        /* Зеленый фон для клеток */
+        .excel-table td.data-cell {
+            background: #e2efda; 
+            position: relative;
+        }
+
+        /* Желтый фон, если выбрана сегодняшняя дата */
+        .table-today td.data-cell { background: #fff2cc !important; }
+        .table-today th.day-header { background: #ffe699 !important; }
+
+        /* Инпут для оценки */
+        .excel-input { 
+            width: 100%; height: 32px; border: none; text-align: center; 
+            font-size: 13px; font-weight: bold; color: #000; background: transparent; 
+            outline: none; font-family: Arial, sans-serif; padding: 0;
+        }
+        .excel-input:focus { background: rgba(255,255,255,0.7); outline: 2px solid #2f8dfc; outline-offset: -2px; }
+        
+        /* Цвета оценок */
+        .excel-input.red { color: #d32f2f; }
+        .excel-input.yellow { color: #f57c00; }
+
+        /* Кружочек с весом */
+        .mark-weight-badge {
+            position: absolute; top: 0; right: 0; transform: translate(30%, -30%);
+            min-width: 12px; height: 12px; background: #c0c0c0; color: #fff;
+            font-size: 8px; font-weight: bold; display: flex; align-items: center;
+            justify-content: center; border-radius: 50%; border: 1px solid #fff;
+            cursor: pointer; z-index: 5; box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            padding: 0 2px; transition: 0.2s;
+        }
+        .mark-weight-badge.active-weight { background: #ff9800; }
+        .mark-weight-badge:hover { transform: translate(30%, -30%) scale(1.2); }
+
+        /* Cards & Forms */
+        .card { background: #fff; border-radius: var(--radius); padding: 16px 20px; box-shadow: var(--shadow); margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
         .field { margin-bottom: 16px; display: flex; flex-direction: column; gap: 6px; }
         .field label { font-size: 13px; color: var(--text-gray); }
-        .field input, .field select { padding: 12px; border: 1px solid #d0d7e2; border-radius: 8px; font-size: 16px; outline: none; }
-        .btn-submit { background: var(--blue-gradient); color: #fff; border: none; border-radius: 8px; padding: 14px; cursor: pointer; font-size: 16px; font-weight: 600; width: 100%; margin-top: 8px; }
-        
-        /* МОБИЛЬНЫЙ ЖУРНАЛ */
-        .journal-controls { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 12px; margin-bottom: 12px; scrollbar-width: none; align-items: center; }
-        .journal-controls select, .journal-controls input { padding: 8px; border: 1px solid #ccc; border-radius: 8px; font-size: 14px; }
-        
-        .btn-lottery { background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; border: none; padding: 8px 12px; border-radius: 8px; font-weight: 700; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 6px; white-space: nowrap; box-shadow: 0 2px 8px rgba(245, 124, 0, 0.3); }
-        
-        .class-avg-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; background: #fff; padding: 12px; border-radius: 12px; box-shadow: var(--shadow); font-size: 14px; font-weight: 600; }
-        .progress-bg { flex: 1; height: 8px; background: #eef2f7; border-radius: 4px; overflow: hidden; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, #28bbfa, #0856cc); border-radius: 4px; transition: width 0.3s; }
+        .field input, .field select { padding: 10px 12px; border: 1px solid #d0d7e2; border-radius: 8px; font-size: 14px; outline: none; }
+        .btn-submit { background: var(--blue-gradient); color: #fff; border: none; border-radius: 8px; padding: 12px; cursor: pointer; font-size: 16px; font-weight: 500; }
 
-        .table-wrapper { width: 100%; overflow-x: auto; background: #fff; border: 1px solid #ccc; border-radius: 8px; }
-        .excel-table { border-collapse: collapse; }
-        .excel-table th, .excel-table td { border: 1px solid #ccc; text-align: center; padding: 0; height: 40px; background: #e2efda; font-size: 11px; }
-        .excel-table th { background: #d9ead3; font-weight: 600; padding: 4px; white-space: nowrap; }
-        
-        .excel-table td.student-name { position: sticky; left: 0; background: #d9ead3; font-weight: 700; text-align: left; padding-left: 8px; min-width: 130px; z-index: 2; font-size: 12px; }
-        
-        /* Колонка со средним баллом */
-        .excel-table th.avg-col, .excel-table td.avg-col { background: #f4f4f4; font-weight: bold; width: 45px; min-width: 45px; font-size: 14px; color: #0e69d5; border-left: 2px solid #a0a0a0; }
+        /* Student views */
+        .feed-date { text-align: center; font-size: 13px; color: var(--text-gray); margin: 24px 0 12px; background: #eef2f7; display: inline-block; padding: 4px 12px; border-radius: 12px; position: relative; left: 50%; transform: translateX(-50%); }
+        .feed-section { background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px; margin-bottom: 16px; max-width: 680px; margin-left: auto; margin-right: auto; }
+        .feed-section-title { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 600; margin-bottom: 16px; }
+        .feed-row { display: flex; justify-content: space-between; border-bottom: 1px solid #eef2f7; padding: 12px 0; }
+        .feed-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .feed-row-title { font-size: 14px; font-weight: 500; }
+        .feed-row-text { font-size: 13px; color: var(--text-gray); margin-top: 2px; }
 
-        .student-cell-wrapper { display: flex; align-items: center; gap: 8px; padding-left: 8px; }
-        .avatar-mini { width: 24px; height: 24px; border-radius: 50%; background: #fff; color: #333; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; border: 1px solid #ccc; }
-        
-        .lottery-highlight { background: #fff3cd !important; transition: 0.3s; }
+        .calendar-row { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 16px; scrollbar-width: none; margin-bottom: 16px; justify-content: center; }
+        .cal-btn { flex-shrink: 0; width: 56px; height: 56px; border-radius: 28px; border: 1px solid transparent; background: #fff; box-shadow: var(--shadow); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
+        .cal-btn.active { background: var(--blue-gradient); color: #fff; }
+        .cal-btn.today { border-color: #2f8dfc; }
 
-        .excel-input { width: 40px; height: 40px; border: none; text-align: center; font-size: 14px; font-weight: bold; background: transparent; outline: none; }
-        .excel-input:focus { background: #fff; box-shadow: inset 0 0 0 2px #2f8dfc; }
-        .weight-badge { position: absolute; top: 0; right: 0; background: #ff9800; color: #fff; font-size: 9px; border-radius: 50%; width: 14px; height: 14px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        .lesson-card { display: flex; flex-direction: column; align-items: flex-start; position: relative; max-width: 680px; margin-left: auto; margin-right: auto; }
+        .lesson-subject { font-size: 16px; font-weight: 500; }
+        .lesson-time { font-size: 13px; color: var(--text-gray); margin-top: 4px; }
+        .lesson-room { font-size: 13px; color: var(--text-gray); position: absolute; right: 20px; top: 50%; transform: translateY(-50%); }
+        .hw-icon { margin-left: 8px; font-size: 14px; vertical-align: middle; }
+        
+        .hw-check { width: 24px; height: 24px; border-radius: 50%; border: 2px solid #d0d7e2; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; color: transparent; font-size: 14px; }
+        .hw-check.done { background: #e5f0fd; border-color: #0e69d5; color: #0e69d5; }
+        .hw-text { font-size: 14px; color: var(--text-gray); margin-top: 4px; }
+
+        .mark-card { display: flex; align-items: center; gap: 16px; max-width: 680px; margin-left: auto; margin-right: auto; }
+        .mark-circle { width: 44px; height: 44px; border-radius: 12px; border: 1px solid rgba(14, 105, 213, 0.2); display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 600; flex-shrink: 0; }
+        .mark-subject { font-size: 16px; font-weight: 500; }
+        .mark-type { font-size: 13px; color: var(--text-gray); margin-top: 2px; }
+
+        .profile-card { display: flex; align-items: center; gap: 16px; background: #fff; border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); margin-bottom: 24px; max-width: 680px; margin-left: auto; margin-right: auto; }
+        .avatar { width: 56px; height: 56px; border-radius: 50%; background: #e5f0fd; display: flex; align-items: center; justify-content: center; font-size: 28px; border: 2px solid #2f8dfc; }
+        .profile-name { font-size: 18px; font-weight: 600; }
+        .profile-class { font-size: 14px; color: var(--text-gray); margin-top: 4px; }
+        .menu-list { background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; max-width: 680px; margin-left: auto; margin-right: auto; }
+        .menu-item { display: flex; align-items: center; padding: 16px 20px; border-bottom: 1px solid #eef2f7; cursor: pointer; }
+        .menu-item:last-child { border-bottom: none; }
+
+        /* Final Grades Student View */
+        .final-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; max-width: 680px; margin: 0 auto; }
+        .final-card { background: #fff; border-radius: 12px; padding: 16px; box-shadow: var(--shadow); text-align: center; border-top: 4px solid #0e69d5; }
+        .final-subject { font-size: 14px; font-weight: 600; color: var(--text-gray); margin-bottom: 8px; }
+        .final-value { font-size: 28px; font-weight: 800; color: #0b1f33; }
+        .final-desc { font-size: 11px; color: var(--text-light); margin-top: 4px; }
+
+        /* Auth */
+        .auth-overlay { position: fixed; inset: 0; background: var(--bg-main); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 16px; }
+        .auth-card { background: #fff; border-radius: 20px; padding: 32px 24px; width: 100%; max-width: 380px; box-shadow: 0 8px 32px rgba(12, 41, 117, 0.12); }
+        .auth-tabs { display: flex; margin-bottom: 24px; border-radius: 8px; overflow: hidden; background: #eef2f7; }
+        .auth-tab { flex: 1; padding: 10px; text-align: center; cursor: pointer; font-size: 14px; font-weight: 500; color: var(--text-gray); }
+        .auth-tab.active { background: #fff; color: var(--text-main); box-shadow: 0 1px 4px rgba(0,0,0,0.1); border-radius: 8px; }
+        .auth-demo { font-size: 12px; color: var(--text-light); text-align: center; margin-top: 16px; line-height: 1.5; }
         
         .hidden { display: none !important; }
-        .empty-state { text-align: center; color: var(--text-gray); padding: 40px 0; font-size: 14px; }
+
+        @media (max-width: 900px) {
+            .logo-area { width: auto; }
+            .logo-sub, .logo-sep { display: none; }
+            .user-area { width: auto; }
+        }
     </style>
 </head>
 <body>
 
     <header class="header" id="main-header">
-        <div class="logo-title">МОЯ ШКОЛА</div>
-        <div class="user-name" id="header-user"></div>
+        <div class="logo-area">
+            <div class="logo-title">МОЯ ШКОЛА</div>
+            <div class="logo-sep"></div>
+            <div class="logo-sub" id="logo-sub"><span>электронный</span><span>дневник</span></div>
+        </div>
+        <div id="header-nav"></div>
+        <div class="user-area" id="header-user"></div>
     </header>
 
     <main class="container" id="app"></main>
-    <nav class="bottom-nav hidden" id="bottom-nav"></nav>
 
+    <!-- Экран Авторизации -->
     <div id="auth-screen" class="auth-overlay hidden">
         <div class="auth-card">
-            <h2>Вход в систему</h2>
-            <form onsubmit="handleAuth(event)">
-                <div class="field"><label>Логин</label><input type="text" id="auth-login" required placeholder="student1 или teacher"></div>
-                <div class="field"><label>Пароль</label><input type="password" id="auth-password" required placeholder="****"></div>
-                <button type="submit" class="btn-submit">Войти</button>
+            <h2 class="page-title" style="text-align:center; margin-bottom: 24px;">Вход в систему</h2>
+            <div class="auth-tabs">
+                <div class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Вход</div>
+                <div class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">Регистрация</div>
+            </div>
+            <form id="auth-form" onsubmit="handleAuth(event)">
+                <div class="field" id="name-field" style="display:none;">
+                    <label>Имя</label>
+                    <input type="text" id="auth-name" placeholder="Иван">
+                </div>
+                <div class="field">
+                    <label>Логин</label>
+                    <input type="text" id="auth-login" required placeholder="admin, teacher, student1">
+                </div>
+                <div class="field">
+                    <label>Пароль</label>
+                    <input type="password" id="auth-password" required placeholder="****">
+                </div>
+                <button type="submit" class="btn-submit" style="width:100%; margin-top: 12px;">Войти</button>
             </form>
-            <div style="font-size: 12px; color: #888; text-align: center; margin-top: 16px;">
-                Ученик: <b>student1 / student1</b><br>Учитель: <b>teacher / teacher</b>
+            <div class="auth-demo">
+                Тестовые аккаунты:<br>
+                <b>admin / admin</b> (Администратор)<br>
+                <b>teacher / teacher</b> (Учитель)<br>
+                <b>student1 / student1</b> (Ученик)
             </div>
         </div>
     </div>
 
 <script>
     const SUBJECTS_LIST = ['Русский язык', 'Математика', 'Литер. чтение', 'Окруж. мир', 'ИЗО', 'Труд(технология)', 'Физкультура', 'Англ. яз.', 'Музыка'];
-    
-    const BELL_SCHEDULE = [
-        { num: 1, start: '08:10', end: '08:50' },
-        { num: 2, start: '09:00', end: '09:40' },
-        { num: 3, start: '10:00', end: '10:40' },
-        { num: 4, start: '11:00', end: '11:40' },
-        { num: 5, start: '11:50', end: '12:30' }
-    ];
 
+    // Улучшенные сокращения с точками
     function getWorkTypes(subject) {
-        if (subject === 'Русский язык') return ['Соч.', 'Изл.', 'Дикт.', 'К/Р', 'С/Р', 'Пров.', 'Сл/Д', 'Отв.', 'Эссе', 'Раб.', 'Письм.', 'Спис.', 'Ан.', 'Прав.'];
-        if (subject === 'Математика') return ['К/Р', 'С/Р', 'К/С', 'Отв.', 'Раб.', 'Вх. К/Р', 'Итог.', 'Прав.', 'Письм.', 'Пров.', 'Спис.', 'Ан.', 'Темат.'];
-        if (subject === 'Литер. чтение') return ['Отв.', 'Чт.', 'Пер.', 'Тест', 'Д/З'];
-        if (subject === 'Окруж. мир') return ['Отв.', 'Тест', 'Пр.', 'Докл.', 'Д/З'];
-        return ['Отв.', 'Пр.', 'Тест', 'Д/З'];
+        if (subject === 'Русский язык') {
+            return [
+                { s: 'Соч.', f: 'Сочинение' },
+                { s: 'Изл.', f: 'Изложение' },
+                { s: 'Дикт.', f: 'Диктант' },
+                { s: 'К/Р', f: 'Контрольная работа' },
+                { s: 'С/Р', f: 'Самостоятельная работа' },
+                { s: 'Пров.', f: 'Проверочная работа' },
+                { s: 'Сл/Д', f: 'Словарный диктант' },
+                { s: 'Отв.', f: 'Ответ на уроке' },
+                { s: 'Эссе', f: 'Эссе' },
+                { s: 'Раб.', f: 'Работа на уроке' },
+                { s: 'Письм.', f: 'Письменная работа' },
+                { s: 'Спис.', f: 'Списывание' },
+                { s: 'Ан.', f: 'Анализ' },
+                { s: 'Прав.', f: 'Правило' }
+            ];
+        } else if (subject === 'Математика') {
+            return [
+                { s: 'К/Р', f: 'Контрольная работа' },
+                { s: 'С/Р', f: 'Самостоятельная работа' },
+                { s: 'К/С', f: 'Контрольное списывание' },
+                { s: 'Отв.', f: 'Ответ на уроке' },
+                { s: 'Раб.', f: 'Работа на уроке' },
+                { s: 'Вх. К/Р', f: 'Входная К/Р' },
+                { s: 'Итог. К/Р', f: 'Итоговая К/Р' },
+                { s: 'Прав.', f: 'Правило' },
+                { s: 'Письм.', f: 'Письменная работа' },
+                { s: 'Пров.', f: 'Проверочная работа' },
+                { s: 'Спис.', f: 'Списывание' },
+                { s: 'Ан.', f: 'Анализ' },
+                { s: 'Темат.', f: 'Тематические К/Р' }
+            ];
+        } else if (subject === 'Литер. чтение') {
+            return [
+                { s: 'Отв.', f: 'Ответ на уроке' },
+                { s: 'Чт.', f: 'Чтение наизусть' },
+                { s: 'Пер.', f: 'Пересказ' },
+                { s: 'Тест', f: 'Тест' },
+                { s: 'Д/З', f: 'Домашнее задание' }
+            ];
+        } else if (subject === 'Окруж. мир') {
+            return [
+                { s: 'Отв.', f: 'Ответ на уроке' },
+                { s: 'Тест', f: 'Тест' },
+                { s: 'Пр.', f: 'Проект' },
+                { s: 'Докл.', f: 'Доклад' },
+                { s: 'Д/З', f: 'Домашнее задание' }
+            ];
+        } else {
+            return [
+                { s: 'Отв.', f: 'Ответ на уроке' },
+                { s: 'Пр.', f: 'Проект' },
+                { s: 'Тест', f: 'Тест' },
+                { s: 'Д/З', f: 'Домашнее задание' }
+            ];
+        }
     }
 
+    let user = JSON.parse(localStorage.getItem('school_user')) || null;
+    
+    // --- База данных ---
     const defaultDB = {
         users: [
             { id: 'u1', login: 'admin', pass: 'admin', role: 'admin', name: 'Администратор', className: '' },
@@ -172,31 +327,61 @@
             { id: 'u4', login: 'student2', pass: 'student2', role: 'student', name: 'Алексей', className: '3 «В» класс' },
             { id: 'u5', login: 'student3', pass: 'student3', role: 'student', name: 'Анастасия', className: '3 «В» класс' },
             { id: 'u6', login: 'student4', pass: 'student4', role: 'student', name: 'Андрей', className: '3 «В» класс' },
-            { id: 'u7', login: 'student5', pass: 'student5', role: 'student', name: 'Анна', className: '3 «В» класс' }
+            { id: 'u7', login: 'student5', pass: 'student5', role: 'student', name: 'Анна', className: '3 «В» класс' },
+            { id: 'u8', login: 'student6', pass: 'student6', role: 'student', name: 'Борис', className: '3 «В» класс' },
+            { id: 'u9', login: 'student7', pass: 'student7', role: 'student', name: 'Виктория', className: '3 «В» класс' },
+            { id: 'u10', login: 'student8', pass: 'student8', role: 'student', name: 'Владислав', className: '3 «В» класс' },
+            { id: 'u11', login: 'student9', pass: 'student9', role: 'student', name: 'Дарья', className: '3 «В» класс' },
+            { id: 'u12', login: 'student10', pass: 'student10', role: 'student', name: 'Денис', className: '3 «В» класс' },
+            { id: 'u13', login: 'student11', pass: 'student11', role: 'student', name: 'Дмитрий', className: '3 «В» класс' },
+            { id: 'u14', login: 'student12', pass: 'student12', role: 'student', name: 'Егор', className: '3 «В» класс' },
+            { id: 'u15', login: 'student13', pass: 'student13', role: 'student', name: 'Екатерина', className: '3 «В» класс' },
+            { id: 'u16', login: 'student14', pass: 'student14', role: 'student', name: 'Елена', className: '3 «В» класс' },
+            { id: 'u17', login: 'student15', pass: 'student15', role: 'student', name: 'Иван', className: '3 «В» класс' },
+            { id: 'u18', login: 'student16', pass: 'student16', role: 'student', name: 'Игорь', className: '3 «В» класс' },
+            { id: 'u19', login: 'student17', pass: 'student17', role: 'student', name: 'Ирина', className: '3 «В» класс' },
+            { id: 'u20', login: 'student18', pass: 'student18', role: 'student', name: 'Кирилл', className: '3 «В» класс' },
+            { id: 'u21', login: 'student19', pass: 'student19', role: 'student', name: 'Ксения', className: '3 «В» класс' },
+            { id: 'u22', login: 'student20', pass: 'student20', role: 'student', name: 'Максим', className: '3 «В» класс' },
+            { id: 'u23', login: 'student21', pass: 'student21', role: 'student', name: 'Маргарита', className: '3 «В» класс' },
+            { id: 'u24', login: 'student22', pass: 'student22', role: 'student', name: 'Михаил', className: '3 «В» класс' },
+            { id: 'u25', login: 'student23', pass: 'student23', role: 'student', name: 'Наталья', className: '3 «В» класс' },
+            { id: 'u26', login: 'student24', pass: 'student24', role: 'student', name: 'Никита', className: '3 «В» класс' },
+            { id: 'u27', login: 'student25', pass: 'student25', role: 'student', name: 'Ольга', className: '3 «В» класс' },
+            { id: 'u28', login: 'student26', pass: 'student26', role: 'student', name: 'Павел', className: '3 «В» класс' },
+            { id: 'u29', login: 'student27', pass: 'student27', role: 'student', name: 'Полина', className: '3 «В» класс' }
         ],
         lessons: [],
         homework: [],
         marks: [] 
     };
 
-    let db = JSON.parse(localStorage.getItem('school_db_v18')) || defaultDB;
-    let user = JSON.parse(localStorage.getItem('school_user')) || null;
+    let savedDB = JSON.parse(localStorage.getItem('school_db_v18')); // Обновили версию
+    let db;
     
+    if (savedDB) {
+        db = savedDB;
+        defaultDB.users.forEach(defUser => {
+            if (!db.users.find(u => u.login === defUser.login)) db.users.push(defUser);
+        });
+    } else {
+        db = defaultDB;
+        localStorage.setItem('school_db_v18', JSON.stringify(db));
+    }
+
     let currentTab = 'feed';
-    let teacherInnerTab = 'grades'; 
-    
     let selectedDate = getToday();
     let journalSubject = 'Русский язык';
-    let journalDate = getToday();
-    let lotteryStudentId = null;
-
+    let journalDate = getToday(); 
+    
+    // --- Утилиты ---
     function getToday() {
         const d = new Date();
         return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
     }
     function saveDB() { localStorage.setItem('school_db_v18', JSON.stringify(db)); }
     function saveUser(u) { user = u; localStorage.setItem('school_user', JSON.stringify(u)); }
-    function logout() { localStorage.removeItem('school_user'); user = null; render(); }
+    function logout() { localStorage.removeItem('school_user'); user = null; currentTab = 'feed'; render(); }
     function uid() { return Math.random().toString(36).substr(2, 9); }
 
     function formatDate(isoDate) {
@@ -207,388 +392,498 @@
         return `${d.getDate()} ${months[d.getMonth()]}`;
     }
 
-    function isCurrentLesson(timeStart, timeEnd) {
-        const now = new Date();
-        const currentTime = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
-        return currentTime >= timeStart && currentTime <= timeEnd;
+    // --- Авторизация ---
+    function switchAuthTab(type) {
+        document.getElementById('tab-login').classList.toggle('active', type === 'login');
+        document.getElementById('tab-register').classList.toggle('active', type === 'register');
+        document.getElementById('name-field').style.display = type === 'register' ? 'flex' : 'none';
     }
 
     function handleAuth(e) {
         e.preventDefault();
         const login = document.getElementById('auth-login').value;
         const pass = document.getElementById('auth-password').value;
-        const u = db.users.find(u => u.login === login && u.pass === pass);
-        if (!u) return alert('Неверный логин или пароль');
-        saveUser(u);
+        const isRegister = document.getElementById('tab-register').classList.contains('active');
+
+        if (isRegister) {
+            const name = document.getElementById('auth-name').value;
+            if (db.users.find(u => u.login === login)) return alert('Логин уже занят');
+            const newUser = { id: 'u'+uid(), login, pass, role: 'student', name, className: '3 «В» класс' };
+            db.users.push(newUser); saveDB(); saveUser(newUser);
+        } else {
+            const u = db.users.find(u => u.login === login && u.pass === pass);
+            if (!u) return alert('Неверный логин или пароль');
+            saveUser(u);
+        }
         render();
     }
 
-    function exportData() {
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
-        const downloadAnchorNode = document.createElement('a');
-        downloadAnchorNode.setAttribute("href", dataStr);
-        downloadAnchorNode.setAttribute("download", "school_data.json");
-        document.body.appendChild(downloadAnchorNode);
-        downloadAnchorNode.click();
-        downloadAnchorNode.remove();
-        alert('Файл скачан! Отправьте его на компьютер.');
-    }
-
-    function importData(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                const imported = JSON.parse(e.target.result);
-                if (imported.users && imported.marks) {
-                    db = imported;
-                    saveDB();
-                    alert('База обновлена!');
-                    render();
-                } else { alert('Ошибка файла.'); }
-            } catch(err) { alert('Ошибка чтения.'); }
-        };
-        reader.readAsText(file);
-    }
-
+    // --- Главный Рендер ---
     function render() {
         const authScreen = document.getElementById('auth-screen');
-        const bottomNav = document.getElementById('bottom-nav');
+        const headerNav = document.getElementById('header-nav');
         const headerUser = document.getElementById('header-user');
+        const logoSub = document.getElementById('logo-sub');
         const app = document.getElementById('app');
 
         if (!user) {
             authScreen.classList.remove('hidden');
-            bottomNav.classList.add('hidden');
-            headerUser.innerHTML = '';
-            app.innerHTML = '';
+            headerNav.innerHTML = ''; headerUser.innerHTML = ''; app.innerHTML = '';
             return;
         }
-
         authScreen.classList.add('hidden');
-        bottomNav.classList.remove('hidden');
-        headerUser.innerHTML = `<span onclick="switchTab('profile')">${user.name} 👤</span>`;
 
-        if (user.role === 'teacher' || user.role === 'admin') {
-            if (currentTab !== 'journal' && currentTab !== 'profile') currentTab = 'journal';
-            bottomNav.innerHTML = `
-                <div class="nav-item ${currentTab==='journal'?'active':''}" onclick="switchTab('journal')"><div class="nav-icon">📓</div><div>Журнал</div></div>
-                <div class="nav-item ${currentTab==='profile'?'active':''}" onclick="switchTab('profile')"><div class="nav-icon">⚙️</div><div>Профиль</div></div>
-            `;
+        if (user.role === 'admin' || user.role === 'teacher') {
+            logoSub.innerHTML = 'Журнал';
+            logoSub.style.color = '#97a4ba'; logoSub.style.fontSize = '13px'; logoSub.style.fontWeight = '700';
+            logoSub.style.textTransform = 'uppercase'; logoSub.style.letterSpacing = '1px'; logoSub.style.flexDirection = 'row';
         } else {
-            if (!['feed', 'schedule', 'homework', 'marks', 'final', 'profile'].includes(currentTab)) currentTab = 'feed';
-            bottomNav.innerHTML = `
-                <div class="nav-item ${currentTab==='feed'?'active':''}" onclick="switchTab('feed')"><div class="nav-icon">🧺</div><div>Лента</div></div>
-                <div class="nav-item ${currentTab==='schedule'?'active':''}" onclick="switchTab('schedule')"><div class="nav-icon">📅</div><div>Расписание</div></div>
-                <div class="nav-item ${currentTab==='homework'?'active':''}" onclick="switchTab('homework')"><div class="nav-icon">📚</div><div>Задания</div></div>
-                <div class="nav-item ${currentTab==='marks'?'active':''}" onclick="switchTab('marks')"><div class="nav-icon">⭐</div><div>Оценки</div></div>
-                <div class="nav-item ${currentTab==='final'?'active':''}" onclick="switchTab('final')"><div class="nav-icon">📊</div><div>Итоговые</div></div>
-            `;
+            logoSub.innerHTML = '<span>электронный</span><span>дневник</span>';
+            logoSub.style.color = '#2f8dfc'; logoSub.style.fontSize = '10px'; logoSub.style.fontWeight = '500';
+            logoSub.style.textTransform = 'lowercase'; logoSub.style.letterSpacing = 'normal'; logoSub.style.flexDirection = 'column';
         }
 
-        if (currentTab === 'journal') renderMobileTeacher(app);
-        else if (currentTab === 'profile') renderProfile(app);
+        headerUser.innerHTML = `<span style="font-size: 14px; color: #0b1f33; font-weight: 500;">${user.name}</span><button class="btn-logout" onclick="logout()">Выйти</button>`;
+
+        let navItems = [];
+        if (user.role === 'admin' || user.role === 'teacher') {
+            navItems = [{ id: 'journal', label: 'Журнал' }, { id: 'final', label: 'Итоговые' }, { id: 'assign_hw', label: 'Задать д/з' }, { id: 'schedule_admin', label: 'Расписание' }];
+            if (!navItems.find(i => i.id === currentTab)) currentTab = 'journal';
+        } else {
+            navItems = [{ id: 'feed', label: 'Лента' }, { id: 'schedule', label: 'Расписание' }, { id: 'homework', label: 'Задания' }, { id: 'marks', label: 'Оценки' }, { id: 'final', label: 'Итоговые' }, { id: 'profile', label: user.name }];
+            if (!navItems.find(i => i.id === currentTab)) currentTab = 'feed';
+        }
+
+        headerNav.innerHTML = `<div class="top-nav">${navItems.map(item => `<button class="top-nav-btn ${currentTab === item.id ? 'active' : ''}" onclick="switchTab('${item.id}')">${item.label}</button>`).join('')}</div>`;
+
+        if (currentTab === 'journal') renderAdminJournal(app);
+        else if (currentTab === 'assign_hw') renderAdminHomework(app);
+        else if (currentTab === 'schedule_admin') renderAdminSchedule(app);
+        else if (currentTab === 'final' && (user.role === 'admin' || user.role === 'teacher')) renderAdminFinal(app);
+        else if (currentTab === 'final') renderStudentFinal(app);
         else if (currentTab === 'feed') renderFeed(app);
         else if (currentTab === 'schedule') renderSchedule(app);
         else if (currentTab === 'homework') renderHomework(app);
         else if (currentTab === 'marks') renderMarks(app);
-        else if (currentTab === 'final') renderFinal(app);
+        else if (currentTab === 'profile') renderProfile(app);
     }
 
     function switchTab(tab) { currentTab = tab; render(); }
 
-    // ==========================================
-    // КОМПОНЕНТЫ ДЛЯ УЧИТЕЛЯ (БЕЗ ИТОГОВЫХ)
-    // ==========================================
-    
-    function renderMobileTeacher(app) {
-        const tabsHtml = `
-            <div class="inner-tabs">
-                <div class="inner-tab ${teacherInnerTab==='grades'?'active':''}" onclick="teacherInnerTab='grades'; render();">Оценки</div>
-                <div class="inner-tab ${teacherInnerTab==='schedule'?'active':''}" onclick="teacherInnerTab='schedule'; render();">Расписание</div>
-                <div class="inner-tab ${teacherInnerTab==='hw'?'active':''}" onclick="teacherInnerTab='hw'; render();">Д/З</div>
-            </div>
-        `;
+    // --- АДМИНСКИЕ КОМПОНЕНТЫ ---
 
-        let contentHtml = '';
+    function renderAdminJournal(app) {
+        const students = db.users.filter(u => u.role === 'student');
+        const todayStr = getToday();
+        const isToday = journalDate === todayStr;
+        
+        const currentWorkTypes = getWorkTypes(journalSubject);
+        const tableClass = isToday ? 'journal-table table-today' : 'journal-table';
 
-        if (teacherInnerTab === 'grades') {
-            const students = db.users.filter(u => u.role === 'student');
-            const workTypes = getWorkTypes(journalSubject);
-            
-            const current = new Date(journalDate);
-            let dates = [];
-            for(let i=-2; i<=2; i++) {
-                let d = new Date(current);
-                d.setDate(current.getDate() + i);
-                dates.push({
-                    iso: d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'),
-                    label: d.getDate() + '.' + String(d.getMonth()+1).padStart(2,'0')
-                });
-            }
-
-            let totalSum = 0, totalCount = 0;
-            students.forEach(s => {
-                const marks = db.marks.filter(m => m.studentId === s.id && m.subject === journalSubject);
-                marks.forEach(m => {
-                    const v = parseFloat(m.value);
-                    if(!isNaN(v)) { totalSum += v; totalCount++; }
-                });
-            });
-            const classAvg = totalCount > 0 ? (totalSum / totalCount).toFixed(1) : '—';
-            const progressPercent = (parseFloat(classAvg) / 5) * 100 || 0;
-
-            contentHtml = `
+        app.innerHTML = `
+            <div class="page-header">
+                <div class="page-title" style="color: var(--text-gray);">Журнал</div>
                 <div class="journal-controls">
+                    <label>Предмет:</label>
                     <select onchange="journalSubject=this.value; render();">
                         ${SUBJECTS_LIST.map(s => `<option value="${s}" ${s === journalSubject ? 'selected' : ''}>${s}</option>`).join('')}
                     </select>
-                    <button class="btn-lottery" onclick="runLottery()">🎲 Лотерея</button>
-                </div>
 
-                <div style="display:flex; gap:8px; overflow-x:auto; margin-bottom:12px;">
-                    ${dates.map(d => `
-                        <button class="cal-btn ${d.iso === journalDate ? 'active' : ''}" style="width: 60px; height: 50px; padding: 4px;" onclick="journalDate='${d.iso}'; render();">
-                            <span class="day">${d.label}</span>
-                        </button>
-                    `).join('')}
-                </div>
+                    <label>Дата:</label>
+                    <input type="date" value="${journalDate}" onchange="journalDate=this.value; render();">
 
-                <div class="class-avg-bar">
-                    <span>Средний балл класса:</span>
-                    <div class="progress-bg"><div class="progress-fill" style="width: ${progressPercent}%"></div></div>
-                    <span style="color: #0e69d5; font-size: 16px;">${classAvg}</span>
+                    <button class="btn-reset" onclick="resetAllMarks()" title="Удалить все оценки, сохранив учеников">Сбросить оценки</button>
                 </div>
-                
-                <div class="table-wrapper">
-                    <table class="excel-table">
-                        <thead>
+            </div>
+            
+            <div class="excel-wrapper">
+                <table class="excel-table ${tableClass}">
+                    <thead>
+                        <tr>
+                            <th class="corner"></th>
+                            <th class="corner"></th>
+                            <!-- Выводим короткие названия с точкой, полные прячем в title -->
+                            ${currentWorkTypes.map(wt => `<th class="day-header" title="${wt.f}">${wt.s}</th>`).join('')}
+                        </tr>
+                        <tr>
+                            <th class="corner"></th>
+                            <th class="student-name">ФИ</th>
+                            ${currentWorkTypes.map(wt => `<th class="day-header" style="font-size: 9px;" title="${wt.f}">${wt.s}</th>`).join('')}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${students.map((s, index) => `
                             <tr>
-                                <th class="student-name">Ученик</th>
-                                ${workTypes.map(wt => `<th>${wt}</th>`).join('')}
-                                <th class="avg-col">Ср. балл</th>
+                                <td class="row-num">${index + 1}</td>
+                                <td class="student-name">${s.name}</td>
+                                ${currentWorkTypes.map(wt => {
+                                    const mark = db.marks.find(m => m.studentId === s.id && m.subject === journalSubject && m.date === journalDate && m.type === wt.s);
+                                    const val = mark ? mark.value : '';
+                                    
+                                    let colorClass = '';
+                                    if (val === '2') colorClass = 'red';
+                                    else if (val === '3') colorClass = 'yellow';
+
+                                    let weightHtml = '';
+                                    if (mark) {
+                                        const w = mark.weight || 1;
+                                        const badgeClass = w > 1 ? 'active-weight' : '';
+                                        weightHtml = `<div class="mark-weight-badge ${badgeClass}" onclick="editWeight(event, '${s.id}', '${journalSubject}', '${journalDate}', '${wt.s}')" title="Изменить вес">${w}</div>`;
+                                    }
+
+                                    return `
+                                        <td class="data-cell">
+                                            ${weightHtml}
+                                            <input type="text" 
+                                                   class="excel-input ${colorClass}" 
+                                                   value="${val}" 
+                                                   onchange="updateMarkInline('${s.id}', '${journalSubject}', '${journalDate}', '${wt.s}', this.value)"
+                                                   oncontextmenu="editWeight(event, '${s.id}', '${journalSubject}', '${journalDate}', '${wt.s}')">
+                                        </td>
+                                    `;
+                                }).join('')}
                             </tr>
-                        </thead>
-                        <tbody>
-                            ${students.map(s => {
-                                const sMarks = db.marks.filter(m => m.studentId === s.id && m.subject === journalSubject);
-                                let has5 = sMarks.some(m => m.value === '5');
-                                let has2 = sMarks.some(m => m.value === '2');
-                                let statusEmoji = has5 ? '🏆' : (has2 ? '⚠️' : '');
-                                const isWinner = lotteryStudentId === s.id;
-                                const rowClass = isWinner ? 'lottery-highlight' : '';
-
-                                let sum = 0, weights = 0;
-                                sMarks.forEach(m => {
-                                    const v = parseFloat(m.value);
-                                    if (!isNaN(v)) { sum += v * (m.weight || 1); weights += (m.weight || 1); }
-                                });
-                                const studentAvg = weights > 0 ? (sum / weights).toFixed(1) : '—';
-
-                                return `
-                                <tr class="${rowClass}">
-                                    <td class="student-name">
-                                        <div class="student-cell-wrapper">
-                                            <div class="avatar-mini">${s.name.charAt(0)}</div>
-                                            <span>${s.name} ${statusEmoji}</span>
-                                        </div>
-                                    </td>
-                                    ${workTypes.map(wt => {
-                                        const mark = db.marks.find(m => m.studentId === s.id && m.subject === journalSubject && m.date === journalDate && m.type === wt);
-                                        const val = mark ? mark.value : '';
-                                        
-                                        let badge = '';
-                                        if(mark && mark.weight > 1) {
-                                            badge = `<div class="weight-badge" onclick="editWeight(event, '${s.id}', '${journalSubject}', '${journalDate}', '${wt}')">${mark.weight}</div>`;
-                                        }
-
-                                        return `
-                                            <td style="position:relative;">
-                                                ${badge}
-                                                <input type="text" class="excel-input" value="${val}" 
-                                                       onchange="updateMark('${s.id}', '${journalSubject}', '${journalDate}', '${wt}', this.value)"
-                                                       oncontextmenu="editWeight(event, '${s.id}', '${journalSubject}', '${journalDate}', '${wt}')">
-                                            </td>
-                                        `;
-                                    }).join('')}
-                                    <td class="avg-col">${studentAvg}</td>
-                                </tr>
-                            `}).join('')}
-                        </tbody>
-                    </table>
-                </div>
-                <div style="text-align:center; font-size:12px; color:#888; margin-top:12px;">
-                    Листайте таблицу вправо. Долгое нажатие на оценку меняет её вес.
-                </div>
-            `;
-        } 
-        else if (teacherInnerTab === 'schedule') {
-            const allLessons = db.lessons.sort((a,b) => { if(a.date !== b.date) return a.date.localeCompare(b.date); return a.time.localeCompare(b.time); });
-            contentHtml = `
-                <div class="card">
-                    <h3 style="margin-bottom: 12px; font-size: 16px;">Добавить урок</h3>
-                    <form onsubmit="addLessonMobile(event)">
-                        <div class="field"><label>Дата</label><input type="date" name="date" value="${getToday()}" required></div>
-                        <div class="field"><label>Время</label><input type="time" name="time" value="08:10" required></div>
-                        <div class="field"><label>Предмет</label><select name="subject" required>${SUBJECTS_LIST.map(s => `<option value="${s}">${s}</option>`).join('')}</select></div>
-                        <div class="field"><label>Кабинет</label><input type="text" name="room" value="211"></div>
-                        <button type="submit" class="btn-submit">Добавить</button>
-                    </form>
-                </div>
-                <h3 style="margin-bottom: 8px; font-size: 16px;">Список уроков</h3>
-                ${allLessons.length ? allLessons.map(l => `
-                    <div class="lesson-list-item">
-                        <div>
-                            <div class="lesson-info">${l.subject}</div>
-                            <div class="lesson-time">${l.date} в ${l.time}</div>
-                        </div>
-                        <button onclick="deleteLesson('${l.id}')" style="background:none; border:none; color:#ee3f58; font-size:20px;">✕</button>
-                    </div>
-                `).join('') : '<div class="empty-state">Расписание пустое</div>'}
-            `;
-        }
-        else if (teacherInnerTab === 'hw') {
-            const allHw = db.homework.sort((a,b) => b.date.localeCompare(a.date));
-            contentHtml = `
-                <div class="card">
-                    <h3 style="margin-bottom: 12px; font-size: 16px;">Задать Д/З</h3>
-                    <form onsubmit="addHwMobile(event)">
-                        <div class="field"><label>Дата</label><input type="date" name="date" value="${getToday()}" required></div>
-                        <div class="field"><label>Предмет</label><select name="subject" required>${SUBJECTS_LIST.map(s => `<option value="${s}">${s}</option>`).join('')}</select></div>
-                        <div class="field"><label>Задание</label><input type="text" name="text" placeholder="с. 44 №82" required></div>
-                        <button type="submit" class="btn-submit">Сохранить</button>
-                    </form>
-                </div>
-                <h3 style="margin-bottom: 8px; font-size: 16px;">Последние задания</h3>
-                ${allHw.length ? allHw.map(h => `
-                    <div class="hw-item" style="padding: 8px 0;">
-                        <div>
-                            <div class="hw-subject">${h.subject} <span style="font-size:12px; font-weight:normal; color:#888;">${h.date}</span></div>
-                            <div class="hw-text">${h.text}</div>
-                        </div>
-                        <button onclick="deleteHw('${h.id}')" style="background:none; border:none; color:#ee3f58; font-size:20px;">✕</button>
-                    </div>
-                `).join('') : '<div class="empty-state">Заданий нет</div>'}
-            `;
-        }
-
-        app.innerHTML = `
-            <div class="page-title">Журнал (3 «В»)</div>
-            ${tabsHtml}
-            ${contentHtml}
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+            <div style="text-align: center; color: #66727f; font-size: 12px; margin-top: 12px;">
+                Выбран предмет: <b>${journalSubject}</b>, дата: <b>${journalDate}</b>. <br>
+                Нажмите на кружок (или ПКМ), чтобы изменить вес.
+            </div>
         `;
     }
 
-    // ... Вспомогательные функции для учителя остались прежними ...
-    function addLessonMobile(e) {
-        e.preventDefault();
-        const fd = new FormData(e.target);
-        const d = Object.fromEntries(fd.entries());
-        db.lessons.push({ id: 'l'+uid(), date: d.date, time: d.time, subject: d.subject, room: d.room, className: '3 «В» класс' });
-        saveDB();
-        alert('Урок добавлен!');
-        e.target.reset();
-        render();
-    }
-    function deleteLesson(id) {
-        if(confirm('Удалить урок?')) {
-            db.lessons = db.lessons.filter(x => x.id !== id);
-            saveDB(); render();
+    function resetAllMarks() {
+        if (confirm('Вы уверены, что хотите удалить ВСЕ оценки во всех предметах? Ученики останутся на месте.')) {
+            db.marks = []; saveDB(); render();
         }
-    }
-    function addHwMobile(e) {
-        e.preventDefault();
-        const fd = new FormData(e.target);
-        const d = Object.fromEntries(fd.entries());
-        db.homework.push({ id: 'h'+uid(), date: d.date, subject: d.subject, text: d.text, doneBy: [] });
-        saveDB();
-        alert('Д/З добавлено!');
-        e.target.reset();
-        render();
-    }
-    function deleteHw(id) {
-        if(confirm('Удалить задание?')) {
-            db.homework = db.homework.filter(x => x.id !== id);
-            saveDB(); render();
-        }
-    }
-
-    function runLottery() {
-        const students = db.users.filter(u => u.role === 'student');
-        if (students.length === 0) return;
-        let counter = 0;
-        const interval = setInterval(() => {
-            const randomIdx = Math.floor(Math.random() * students.length);
-            lotteryStudentId = students[randomIdx].id;
-            render(); 
-            counter++;
-            if (counter > 10) {
-                clearInterval(interval);
-                const finalIdx = Math.floor(Math.random() * students.length);
-                lotteryStudentId = students[finalIdx].id;
-                render();
-                alert(`🎉 Выбран ученик: ${students[finalIdx].name}!`);
-                setTimeout(() => { lotteryStudentId = null; render(); }, 3000);
-            }
-        }, 100);
-    }
-
-    function playGradeSound(val) {
-        if (val === '5') {
-            try {
-                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioCtx.createOscillator();
-                const gainNode = audioCtx.createGain();
-                oscillator.type = 'sine';
-                oscillator.frequency.setValueAtTime(880, audioCtx.currentTime);
-                oscillator.frequency.exponentialRampToValueAtTime(1760, audioCtx.currentTime + 0.1);
-                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-                oscillator.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
-                oscillator.start();
-                oscillator.stop(audioCtx.currentTime + 0.3);
-            } catch(e) {}
-        }
-    }
-
-    function updateMark(studentId, subject, date, type, value) {
-        value = value.trim();
-        if (value === '5') playGradeSound('5');
-        const existing = db.marks.find(m => m.studentId === studentId && m.subject === subject && m.date === date && m.type === type);
-        if (existing) {
-            if (value === '') db.marks = db.marks.filter(m => m.id !== existing.id);
-            else existing.value = value;
-        } else if (value !== '') {
-            db.marks.push({ id: 'm'+uid(), studentId, subject, date, value, weight: 1, type: type });
-        }
-        saveDB(); 
     }
 
     function editWeight(e, studentId, subject, date, type) {
-        e.preventDefault(); e.stopPropagation();
-        const mark = db.marks.find(m => m.studentId === studentId && m.subject === subject && m.date === date && m.type === type);
-        if (!mark) return;
-        const w = prompt('Вес оценки (1, 2, 3):', mark.weight || 1);
-        if (w && parseInt(w) > 0) { mark.weight = parseInt(w); saveDB(); render(); }
+        if (e) { e.stopPropagation(); e.preventDefault(); }
+        const existingMark = db.marks.find(m => m.studentId === studentId && m.subject === subject && m.date === date && m.type === type);
+        if (!existingMark) { alert('Сначала введите оценку в клетку!'); return; }
+        
+        const currentW = existingMark.weight || 1;
+        const newWeight = prompt('Введите вес оценки (например, 1, 2 или 3):', currentW);
+        
+        if (newWeight !== null) {
+            const parsed = parseInt(newWeight);
+            if (!isNaN(parsed) && parsed > 0) { existingMark.weight = parsed; saveDB(); render(); }
+        }
     }
 
-    // ==========================================
-    // КОМПОНЕНТЫ ДЛЯ УЧЕНИКА (ОСТАЛИСЬ БЕЗ ИЗМЕНЕНИЙ)
-    // ==========================================
+    function updateMarkInline(studentId, subject, date, type, value) {
+        value = value.trim();
+        const existingMark = db.marks.find(m => m.studentId === studentId && m.subject === subject && m.date === date && m.type === type);
+        
+        if (existingMark) {
+            if (value === '') db.marks = db.marks.filter(m => m.id !== existingMark.id);
+            else existingMark.value = value;
+        } else if (value !== '') {
+            db.marks.push({ 
+                id: 'm'+uid(), 
+                studentId, 
+                subject, 
+                date, 
+                value, 
+                weight: 1,
+                type: type 
+            });
+        }
+        saveDB(); render();
+    }
 
-    function renderFeed(app) { /* ... */ }
-    function renderSchedule(app) { /* ... */ }
-    function renderHomework(app) { /* ... */ }
-    function renderMarks(app) { /* ... */ }
-    function renderFinal(app) { /* ... */ }
-    function renderProfile(app) { /* ... */ }
+    function renderAdminSchedule(app) {
+        const allLessons = db.lessons.sort((a,b) => { if(a.date !== b.date) return a.date.localeCompare(b.date); return a.time.localeCompare(b.time); });
+        app.innerHTML = `
+            <div class="page-header"><div class="page-title" style="color: var(--text-gray);">Расписание</div></div>
+            <div class="card" style="padding: 24px; margin-bottom: 32px; max-width: 680px; margin-left: auto; margin-right: auto;">
+                <form onsubmit="handleAddLesson(event)" style="width: 100%;">
+                    <div class="field"><label>Дата</label><input type="date" name="date" value="${getToday()}" required></div>
+                    <div class="field"><label>Время начала</label><input type="time" name="time" value="08:10" required></div>
+                    <div class="field"><label>Предмет</label><select name="subject" required>${SUBJECTS_LIST.map(s => `<option value="${s}">${s}</option>`).join('')}</select></div>
+                    <div class="field"><label>Кабинет</label><input type="text" name="room" value="211"></div>
+                    <button type="submit" class="btn-submit" style="width: 100%; margin-top: 8px;">Добавить урок</button>
+                </form>
+            </div>
+            <h3 style="margin-bottom: 16px; font-size: 18px; text-align: center; color: var(--text-gray);">Добавленные уроки</h3>
+            <div style="display: flex; flex-direction: column; gap: 12px; max-width: 680px; margin-left: auto; margin-right: auto;">
+                ${allLessons.length ? allLessons.map(l => `
+                    <div class="card" style="display: flex; justify-content: space-between; align-items: center; margin: 0;">
+                        <div>
+                            <div style="font-weight: 600; font-size: 15px; margin-bottom: 4px;">${l.subject} <span style="font-size: 12px; color: #66727f; font-weight: normal;">(каб. ${l.room})</span></div>
+                            <div style="font-size: 13px; color: #66727f;">${l.date} в ${l.time}</div>
+                        </div>
+                        <button class="icon-btn" onclick="deleteLesson('${l.id}')" style="font-size: 24px; color: #ee3f58; background:none; border:none; cursor:pointer;">×</button>
+                    </div>
+                `).join('') : '<div style="color:#66727f; text-align: center;">Расписание пока пустое</div>'}
+            </div>
+        `;
+    }
 
-    // Заглушки для функций (чтобы не ломать вызовы, если зайдет ученик)
-    // (в реальном коде они заполнены, тут сокращено для ответа)
-    
-    // ...
+    function handleAddLesson(e) {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData.entries());
+        db.lessons.push({ id: 'l'+uid(), date: data.date, time: data.time, subject: data.subject, room: data.room, className: '3 «В» класс' });
+        saveDB(); render();
+    }
+
+    function deleteLesson(id) {
+        if (!confirm('Удалить урок из расписания?')) return;
+        db.lessons = db.lessons.filter(x => x.id !== id); saveDB(); render();
+    }
+
+    function getFinalMark(studentId, subject) {
+        const marks = db.marks.filter(m => m.studentId === studentId && m.subject === subject);
+        if (marks.length === 0) return '';
+        let sum = 0, weights = 0;
+        marks.forEach(m => {
+            const val = parseFloat(m.value);
+            if (!isNaN(val)) { sum += val * (m.weight || 1); weights += (m.weight || 1); }
+        });
+        if (weights === 0) return '';
+        return Math.round(sum / weights);
+    }
+
+    function renderAdminFinal(app) {
+        const students = db.users.filter(u => u.role === 'student');
+        app.innerHTML = `
+            <div class="page-header"><div class="page-title" style="color: var(--text-gray);">Итоговые оценки</div></div>
+            <div class="excel-wrapper">
+                <table class="excel-table final-table" style="width: 100%;">
+                    <thead><tr><th class="student-name" style="left:0;">ФИ ученика</th>${SUBJECTS_LIST.map(subj => `<th style="font-size: 10px; padding: 4px;">${subj}</th>`).join('')}</tr></thead>
+                    <tbody>
+                        ${students.map(s => `
+                            <tr>
+                                <td class="student-name" style="left:0;">${s.name}</td>
+                                ${SUBJECTS_LIST.map(subj => {
+                                    const final = getFinalMark(s.id, subj);
+                                    return `<td class="data-cell"><span class="final-grade" style="color:#0b1f33; font-weight:bold; font-size:14px;">${final}</span></td>`;
+                                }).join('')}
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+        `;
+    }
+
+    function renderAdminHomework(app) {
+        const allHomework = db.homework.sort((a,b) => b.date.localeCompare(a.date));
+        app.innerHTML = `
+            <div class="page-header"><div class="page-title" style="color: var(--text-gray);">Задать домашнее задание</div></div>
+            <div class="card" style="padding: 24px; margin-bottom: 32px; max-width: 680px; margin-left: auto; margin-right: auto;">
+                <form id="admin-hw-form" onsubmit="handleAddHw(event)" style="width: 100%;">
+                    <div class="field"><label>Дата</label><input type="date" name="date" value="${getToday()}" required></div>
+                    <div class="field"><label>Предмет</label><select name="subject" required>${SUBJECTS_LIST.map(s => `<option value="${s}">${s}</option>`).join('')}</select></div>
+                    <div class="field"><label>Задание</label><input type="text" name="text" placeholder="с. 44 №82" required></div>
+                    <button type="submit" class="btn-submit" style="width: 100%; margin-top: 8px;">Выдать задание</button>
+                </form>
+            </div>
+            <h3 style="margin-bottom: 16px; font-size: 18px; text-align: center; color: var(--text-gray);">Последние выданные задания</h3>
+            <div style="display: flex; flex-direction: column; gap: 12px; max-width: 680px; margin-left: auto; margin-right: auto;">
+                ${allHomework.length ? allHomework.map(h => `
+                    <div class="card" style="display: flex; justify-content: space-between; align-items: center; margin: 0;">
+                        <div>
+                            <div style="font-weight: 600; font-size: 15px; margin-bottom: 4px;">${h.subject}</div>
+                            <div style="font-size: 14px; color: #66727f;">${h.text}</div>
+                            <div style="font-size: 12px; color: #97a4ba; margin-top: 8px;">На ${h.date}</div>
+                        </div>
+                        <button class="icon-btn" onclick="deleteHomework('${h.id}')" style="font-size: 24px; color: #ee3f58; background:none; border:none; cursor:pointer;">×</button>
+                    </div>
+                `).join('') : '<div style="color:#66727f; text-align: center;">Заданий пока нет</div>'}
+            </div>
+        `;
+    }
+
+    function handleAddHw(e) {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData.entries());
+        db.homework.push({ id: 'h'+uid(), date: data.date, subject: data.subject, text: data.text, doneBy: [] });
+        saveDB(); render();
+    }
+
+    // --- УЧЕНИЧЕСКИЕ КОМПОНЕНТЫ ---
+    function renderStudentFinal(app) {
+        app.innerHTML = `
+            <div class="page-header"><div class="page-title">Мои итоговые оценки</div></div>
+            <div class="final-grid">
+                ${SUBJECTS_LIST.map(subj => {
+                    const final = getFinalMark(user.id, subj);
+                    const marksCount = db.marks.filter(m => m.studentId === user.id && m.subject === subj).length;
+                    return `
+                        <div class="final-card">
+                            <div class="final-subject">${subj}</div>
+                            <div class="final-value">${final || '—'}</div>
+                            <div class="final-desc">${marksCount > 0 ? 'оценок: ' + marksCount : 'нет оценок'}</div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        `;
+    }
+
+    function buildCalendarHtml() {
+        const todayStr = getToday();
+        const curr = new Date(todayStr);
+        const first = curr.getDate() - curr.getDay() + 1; 
+        let weekDays = [];
+        for (let i = 0; i < 7; i++) {
+            let d = new Date(curr.setDate(first + i));
+            weekDays.push({
+                iso: d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'),
+                day: d.getDate(),
+                wd: ['вс','пн','вт','ср','чт','пт','сб'][d.getDay()]
+            });
+        }
+        
+        return `
+            <div class="calendar-row">
+                <button class="cal-btn"><span>🗓️</span></button>
+                ${weekDays.map(d => `
+                    <button class="cal-btn ${d.iso === selectedDate ? 'active' : ''} ${d.iso === todayStr ? 'today' : ''}" 
+                            onclick="selectedDate='${d.iso}'; render();">
+                        <span class="day">${d.day}</span>
+                        <span class="wd">${d.wd}</span>
+                        ${d.iso === todayStr ? '<span class="cal-cap">сегодня</span>' : ''}
+                    </button>
+                `).join('')}
+            </div>
+        `;
+    }
+
+    function renderFeed(app) {
+        const today = getToday();
+        const hwToday = db.homework.filter(h => h.date === today);
+        const marksToday = db.marks.filter(m => m.date === today && m.studentId === user.id);
+        app.innerHTML = `
+            <div class="page-header"><div class="page-title">Лента</div></div>
+            <div class="feed-date">${formatDate(today)}</div>
+            ${hwToday.length ? `
+            <div class="feed-section">
+                <div class="feed-section-title"><span style="color:#2f8dfc">📘</span> Домашние задания</div>
+                ${hwToday.map(h => `<div class="feed-row"><div><div class="feed-row-title">${h.subject}</div><div class="feed-row-text">${h.text}</div></div></div>`).join('')}
+            </div>` : ''}
+            ${marksToday.length ? `
+            <div class="feed-section">
+                <div class="feed-section-title"><span style="color:#2f8dfc">⭐</span> Оценки</div>
+                ${marksToday.map(m => `
+                    <div class="feed-row">
+                        <div style="display:flex; gap:12px; align-items:center;">
+                            <div class="mark-circle" style="width:32px;height:32px;font-size:14px;border-radius:8px;">${m.value}</div>
+                            <div><div class="feed-row-title">${m.subject}</div><div class="feed-row-text">${m.type || 'Урок'}</div></div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>` : ''}
+            ${(!hwToday.length && !marksToday.length) ? '<div style="text-align:center; color:var(--text-gray); margin-top:40px;">Событий пока нет</div>' : ''}
+        `;
+    }
+
+    function renderSchedule(app) {
+        const lessons = db.lessons.filter(l => l.date === selectedDate).sort((a,b) => a.time.localeCompare(b.time));
+        app.innerHTML = `
+            <div class="page-header"><div class="page-title">Расписание</div></div>
+            ${buildCalendarHtml()}
+            <div>
+                ${lessons.length ? lessons.map(l => `
+                    <div class="card lesson-card">
+                        <div class="lesson-subject">${l.subject} ${db.homework.some(h => h.date===l.date && h.subject===l.subject) ? '<span class="hw-icon">📝</span>' : ''}</div>
+                        <div class="lesson-time">${l.time}—${addMinutes(l.time, 40)}</div>
+                        <div class="lesson-room">${l.room}</div>
+                    </div>
+                `).join('') : '<div style="text-align:center; color:var(--text-gray); margin-top:40px;">Уроков нет</div>'}
+            </div>
+        `;
+    }
+
+    function renderHomework(app) {
+        const hwList = db.homework.filter(h => h.date === selectedDate);
+        app.innerHTML = `
+            <div class="page-header"><div class="page-title">Задания</div></div>
+            ${buildCalendarHtml()}
+            ${hwList.length ? hwList.map(h => {
+                const isDone = h.doneBy.includes(user.id);
+                return `
+                <div class="card lesson-card">
+                    <div class="lesson-subject">${h.subject}</div>
+                    <div class="hw-text">${h.text}</div>
+                    <div style="position:absolute; right:20px; top:50%; transform:translateY(-50%);">
+                        <div class="hw-check ${isDone?'done':''}" onclick="toggleHomework('${h.id}')">✓</div>
+                    </div>
+                </div>
+                `}).join('') : '<div style="text-align:center; color:var(--text-gray); margin-top:40px;">Заданий нет</div>'}
+        `;
+    }
+
+    function renderMarks(app) {
+        let marks = db.marks.filter(m => m.studentId === user.id);
+        const grouped = {};
+        marks.forEach(m => { if (!grouped[m.date]) grouped[m.date] = []; grouped[m.date].push(m); });
+        const sortedDates = Object.keys(grouped).sort((a,b) => b.localeCompare(a));
+        app.innerHTML = `
+            <div class="page-header"><div class="page-title">Оценки</div></div>
+            <div id="marks-list">
+                ${sortedDates.length ? sortedDates.map(date => `
+                    <div class="feed-date">${formatDate(date)}</div>
+                    ${grouped[date].map(m => `
+                        <div class="card mark-card">
+                            <div class="mark-circle">${m.value}</div>
+                            <div style="flex:1">
+                                <div class="mark-subject">${m.subject}</div>
+                                <div class="mark-type">${m.type || 'Урок'} ${m.weight > 1 ? '· вес ' + m.weight : ''}</div>
+                            </div>
+                        </div>
+                    `).join('')}
+                `).join('') : `
+                    <div style="text-align:center; color:var(--text-gray); margin-top:40px;">
+                        <div style="font-size:40px; margin-bottom:12px;">⭐</div>
+                        <div>Оценок пока нет</div>
+                    </div>
+                `}
+            </div>
+        `;
+    }
+
+    function renderProfile(app) {
+        app.innerHTML = `
+            <div class="profile-card">
+                <div class="avatar">👨‍🎓</div>
+                <div>
+                    <div class="profile-name">${user.name}</div>
+                    <div class="profile-class">${user.className}</div>
+                </div>
+            </div>
+            <div class="menu-list">
+                <div class="menu-item"><div class="menu-icon">❓</div><div class="menu-text">Помощь и поддержка</div><div class="menu-arrow">›</div></div>
+                <div class="menu-item" onclick="logout()"><div class="menu-icon">🚪</div><div class="menu-text" style="color:#ee3f58">Выйти</div><div class="menu-arrow">›</div></div>
+            </div>
+        `;
+    }
+
+    function addMinutes(time, mins) {
+        let [h, m] = time.split(':').map(Number);
+        let d = new Date(2000, 0, 1, h, m + mins);
+        return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+    }
+
+    function toggleHomework(id) {
+        const h = db.homework.find(x => x.id === id);
+        if (!h) return;
+        const idx = h.doneBy.indexOf(user.id);
+        if (idx > -1) h.doneBy.splice(idx, 1); else h.doneBy.push(user.id);
+        saveDB(); render();
+    }
+
+    function deleteHomework(id) {
+        if (!confirm('Удалить задание?')) return;
+        db.homework = db.homework.filter(x => x.id !== id);
+        saveDB(); render();
+    }
 
     render();
 </script>
