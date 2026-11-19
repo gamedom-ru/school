@@ -22,9 +22,17 @@
 
         /* Header & Logo */
         .header { display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 10; min-height: 64px; }
-        .logo-area { display: flex; align-items: center; user-select: none; width: 250px; }
-        .logo-title { font-family: Arial, sans-serif; font-size: 24px; font-weight: 800; color: #0b1f33; letter-spacing: -0.5px; }
-        .logo-sep { width: 1px; height: 26px; background-color: #aeb8c4; margin: 0 10px; }
+        .logo-area { display: flex; align-items: center; user-select: none; width: 300px; gap: 12px; }
+        
+        /* Логотип Госуслуг */
+        .gos-logo-img { height: 24px; width: auto; display: block; }
+        
+        /* Разделитель */
+        .logo-divider { width: 1px; height: 24px; background-color: #aeb8c4; }
+        
+        /* Текстовая часть логотипа */
+        .logo-text { display: flex; flex-direction: column; }
+        .logo-title { font-family: Arial, sans-serif; font-size: 20px; font-weight: 800; color: #0b1f33; letter-spacing: -0.5px; line-height: 1.1; }
         .logo-sub { font-family: Arial, sans-serif; font-size: 10px; color: #2f8dfc; line-height: 1.1; text-transform: lowercase; font-weight: 500; display: flex; flex-direction: column; }
         
         #header-nav { flex: 1; display: flex; justify-content: center; overflow-x: auto; padding: 0 10px; }
@@ -233,13 +241,14 @@
         /* Кнопка Госуслуг */
         .btn-gosuslugi { display: flex; align-items: center; justify-content: center; gap: 8px; background: #0d4cd3; color: #fff; padding: 14px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; border: none; width: 100%; transition: 0.2s; }
         .btn-gosuslugi:hover { background: #0a3ea8; }
-        .gos-logo { font-weight: 800; font-size: 18px; letter-spacing: -1px; }
+        .gos-logo-text { font-weight: 800; font-size: 18px; letter-spacing: -1px; }
 
         .hidden { display: none !important; }
 
         @media (max-width: 900px) {
             .logo-area { width: auto; }
-            .logo-sub, .logo-sep { display: none; }
+            .logo-text .logo-sub { display: none; }
+            .logo-divider { display: none; }
             .user-area { width: auto; }
             .user-role { display: none; }
             .logout-btn span:not(.logout-icon) { display: none; }
@@ -251,9 +260,13 @@
 
     <header class="header" id="main-header">
         <div class="logo-area">
-            <div class="logo-title">МОЯ ШКОЛА</div>
-            <div class="logo-sep"></div>
-            <div class="logo-sub" id="logo-sub"><span>электронный</span><span>дневник</span></div>
+            <!-- Логотип Госуслуг -->
+            <img src="//gu-st.ru/epgu-app-school-st/assets/svg/logo-big.svg" alt="Госуслуги" class="gos-logo-img">
+            <div class="logo-divider"></div>
+            <div class="logo-text">
+                <div class="logo-title">МОЯ ШКОЛА</div>
+                <div class="logo-sub" id="logo-sub"><span>электронный</span><span>журнал</span></div>
+            </div>
         </div>
         <div id="header-nav"></div>
         <div class="user-area" id="header-user"></div>
@@ -267,7 +280,7 @@
             <h2 class="page-title" style="text-align:center; margin-bottom: 24px;">Вход в систему</h2>
             
             <button class="btn-gosuslugi" onclick="showLoginForm()">
-                <span class="gos-logo">Госуслуги</span> Войти
+                <span class="gos-logo-text">Госуслуги</span> Войти
             </button>
 
             <div id="login-form-container" class="hidden" style="margin-top: 20px;">
@@ -427,7 +440,7 @@
     function saveDB() { localStorage.setItem('school_db_v18', JSON.stringify(db)); }
     function saveUser(u) { user = u; localStorage.setItem('school_user', JSON.stringify(u)); }
     
-    // Улучшенная функция выхода с подтверждением
+    // Функция выхода с подтверждением
     function logout() {
         if (confirm('Вы уверены, что хотите выйти из системы?')) {
             localStorage.removeItem('school_user');
@@ -493,14 +506,23 @@
         }
         authScreen.classList.add('hidden');
 
+        // Изменение подписи в зависимости от роли
         if (user.role === 'admin' || user.role === 'teacher') {
-            logoSub.innerHTML = 'Журнал';
-            logoSub.style.color = '#97a4ba'; logoSub.style.fontSize = '13px'; logoSub.style.fontWeight = '700';
-            logoSub.style.textTransform = 'uppercase'; logoSub.style.letterSpacing = '1px'; logoSub.style.flexDirection = 'row';
+            logoSub.innerHTML = '<span>электронный</span><span>журнал</span>';
+            logoSub.style.color = '#2f8dfc'; 
+            logoSub.style.fontSize = '10px'; 
+            logoSub.style.fontWeight = '500';
+            logoSub.style.textTransform = 'lowercase'; 
+            logoSub.style.letterSpacing = 'normal'; 
+            logoSub.style.flexDirection = 'column';
         } else {
             logoSub.innerHTML = '<span>электронный</span><span>дневник</span>';
-            logoSub.style.color = '#2f8dfc'; logoSub.style.fontSize = '10px'; logoSub.style.fontWeight = '500';
-            logoSub.style.textTransform = 'lowercase'; logoSub.style.letterSpacing = 'normal'; logoSub.style.flexDirection = 'column';
+            logoSub.style.color = '#2f8dfc'; 
+            logoSub.style.fontSize = '10px'; 
+            logoSub.style.fontWeight = '500';
+            logoSub.style.textTransform = 'lowercase'; 
+            logoSub.style.letterSpacing = 'normal'; 
+            logoSub.style.flexDirection = 'column';
         }
 
         // Блок пользователя с кнопкой выхода
