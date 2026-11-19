@@ -22,18 +22,11 @@
 
         /* Header & Logo */
         .header { display: flex; align-items: center; justify-content: space-between; padding: 12px 24px; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 10; min-height: 64px; }
-        .logo-area { display: flex; align-items: center; user-select: none; width: 300px; gap: 12px; }
+        
+        .logo-area { display: flex; align-items: center; user-select: none; width: 250px; }
         
         /* Логотип Госуслуг */
         .gos-logo-img { height: 24px; width: auto; display: block; }
-        
-        /* Разделитель */
-        .logo-divider { width: 1px; height: 24px; background-color: #aeb8c4; }
-        
-        /* Текстовая часть логотипа */
-        .logo-text { display: flex; flex-direction: column; }
-        .logo-title { font-family: Arial, sans-serif; font-size: 20px; font-weight: 800; color: #0b1f33; letter-spacing: -0.5px; line-height: 1.1; }
-        .logo-sub { font-family: Arial, sans-serif; font-size: 10px; color: #2f8dfc; line-height: 1.1; text-transform: lowercase; font-weight: 500; display: flex; flex-direction: column; }
         
         #header-nav { flex: 1; display: flex; justify-content: center; overflow-x: auto; padding: 0 10px; }
         .user-area { display: flex; align-items: center; justify-content: flex-end; gap: 12px; width: 250px; }
@@ -247,8 +240,6 @@
 
         @media (max-width: 900px) {
             .logo-area { width: auto; }
-            .logo-text .logo-sub { display: none; }
-            .logo-divider { display: none; }
             .user-area { width: auto; }
             .user-role { display: none; }
             .logout-btn span:not(.logout-icon) { display: none; }
@@ -262,11 +253,6 @@
         <div class="logo-area">
             <!-- Логотип Госуслуг -->
             <img src="//gu-st.ru/epgu-app-school-st/assets/svg/logo-big.svg" alt="Госуслуги" class="gos-logo-img">
-            <div class="logo-divider"></div>
-            <div class="logo-text">
-                <div class="logo-title">МОЯ ШКОЛА</div>
-                <div class="logo-sub" id="logo-sub"><span>электронный</span><span>журнал</span></div>
-            </div>
         </div>
         <div id="header-nav"></div>
         <div class="user-area" id="header-user"></div>
@@ -440,7 +426,6 @@
     function saveDB() { localStorage.setItem('school_db_v18', JSON.stringify(db)); }
     function saveUser(u) { user = u; localStorage.setItem('school_user', JSON.stringify(u)); }
     
-    // Функция выхода с подтверждением
     function logout() {
         if (confirm('Вы уверены, что хотите выйти из системы?')) {
             localStorage.removeItem('school_user');
@@ -496,7 +481,6 @@
         const authScreen = document.getElementById('auth-screen');
         const headerNav = document.getElementById('header-nav');
         const headerUser = document.getElementById('header-user');
-        const logoSub = document.getElementById('logo-sub');
         const app = document.getElementById('app');
 
         if (!user) {
@@ -505,25 +489,6 @@
             return;
         }
         authScreen.classList.add('hidden');
-
-        // Изменение подписи в зависимости от роли
-        if (user.role === 'admin' || user.role === 'teacher') {
-            logoSub.innerHTML = '<span>электронный</span><span>журнал</span>';
-            logoSub.style.color = '#2f8dfc'; 
-            logoSub.style.fontSize = '10px'; 
-            logoSub.style.fontWeight = '500';
-            logoSub.style.textTransform = 'lowercase'; 
-            logoSub.style.letterSpacing = 'normal'; 
-            logoSub.style.flexDirection = 'column';
-        } else {
-            logoSub.innerHTML = '<span>электронный</span><span>дневник</span>';
-            logoSub.style.color = '#2f8dfc'; 
-            logoSub.style.fontSize = '10px'; 
-            logoSub.style.fontWeight = '500';
-            logoSub.style.textTransform = 'lowercase'; 
-            logoSub.style.letterSpacing = 'normal'; 
-            logoSub.style.flexDirection = 'column';
-        }
 
         // Блок пользователя с кнопкой выхода
         const userInitials = user.name.substring(0, 2).toUpperCase();
