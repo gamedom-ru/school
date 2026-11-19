@@ -30,9 +30,40 @@
         #header-nav { flex: 1; display: flex; justify-content: center; overflow-x: auto; padding: 0 10px; }
         .user-area { display: flex; align-items: center; justify-content: flex-end; gap: 12px; width: 250px; }
         
-        /* Новый блок пользователя (Госуслуги стиль) */
+        /* Блок пользователя */
         .user-role { font-size: 14px; font-weight: 600; color: var(--text-gray); }
-        .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--blue-gradient); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; cursor: pointer; text-transform: uppercase; }
+        .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--blue-gradient); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; cursor: pointer; text-transform: uppercase; transition: 0.2s; }
+        .user-avatar:hover { transform: scale(1.05); box-shadow: 0 2px 8px rgba(12, 41, 117, 0.2); }
+
+        /* Кнопка выхода в шапке */
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 14px;
+            background: #fde8eb;
+            color: #ee3f58;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            white-space: nowrap;
+            font-family: inherit;
+        }
+        .logout-btn:hover {
+            background: #fcc5cb;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(238, 63, 88, 0.2);
+        }
+        .logout-btn:active {
+            transform: translateY(0);
+        }
+        .logout-btn .logout-icon {
+            font-size: 16px;
+        }
 
         /* Верхнее меню */
         .top-nav { display: flex; background: #eef2f7; border-radius: 12px; padding: 4px; gap: 4px; }
@@ -69,7 +100,7 @@
             white-space: nowrap;
         }
 
-        /* Фиксация ширины для компактности (40px в ширину, 32px в высоту) */
+        /* Фиксация ширины для компактности */
         .journal-table th.day-header,
         .journal-table td.data-cell,
         .journal-table th.corner,
@@ -210,6 +241,9 @@
             .logo-area { width: auto; }
             .logo-sub, .logo-sep { display: none; }
             .user-area { width: auto; }
+            .user-role { display: none; }
+            .logout-btn span:not(.logout-icon) { display: none; }
+            .logout-btn { padding: 8px 10px; }
         }
     </style>
 </head>
@@ -232,7 +266,6 @@
         <div class="auth-card">
             <h2 class="page-title" style="text-align:center; margin-bottom: 24px;">Вход в систему</h2>
             
-            <!-- Кнопка Госуслуг -->
             <button class="btn-gosuslugi" onclick="showLoginForm()">
                 <span class="gos-logo">Госуслуги</span> Войти
             </button>
@@ -270,7 +303,6 @@
 <script>
     const SUBJECTS_LIST = ['Русский язык', 'Математика', 'Литер. чтение', 'Окруж. мир', 'ИЗО', 'Труд(технология)', 'Физкультура', 'Англ. яз.', 'Музыка'];
 
-    // Улучшенные сокращения с точками
     function getWorkTypes(subject) {
         if (subject === 'Русский язык') {
             return [
@@ -333,7 +365,6 @@
 
     let user = JSON.parse(localStorage.getItem('school_user')) || null;
     
-    // --- База данных ---
     const defaultDB = {
         users: [
             { id: 'u1', login: 'admin', pass: 'admin', role: 'admin', name: 'Администратор', className: '' },
@@ -371,7 +402,7 @@
         marks: [] 
     };
 
-    let savedDB = JSON.parse(localStorage.getItem('school_db_v18')); // Обновили версию
+    let savedDB = JSON.parse(localStorage.getItem('school_db_v18'));
     let db;
     
     if (savedDB) {
@@ -389,14 +420,26 @@
     let journalSubject = 'Русский язык';
     let journalDate = getToday(); 
     
-    // --- Утилиты ---
     function getToday() {
         const d = new Date();
         return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
     }
     function saveDB() { localStorage.setItem('school_db_v18', JSON.stringify(db)); }
     function saveUser(u) { user = u; localStorage.setItem('school_user', JSON.stringify(u)); }
-    function logout() { localStorage.removeItem('school_user'); user = null; currentTab = 'feed'; render(); }
+    
+    // Улучшенная функция выхода с подтверждением
+    function logout() {
+        if (confirm('Вы уверены, что хотите выйти из системы?')) {
+            localStorage.removeItem('school_user');
+            user = null;
+            currentTab = 'feed';
+            selectedDate = getToday();
+            journalSubject = 'Русский язык';
+            journalDate = getToday();
+            render();
+        }
+    }
+    
     function uid() { return Math.random().toString(36).substr(2, 9); }
 
     function formatDate(isoDate) {
@@ -407,7 +450,6 @@
         return `${d.getDate()} ${months[d.getMonth()]}`;
     }
 
-    // --- Авторизация ---
     function showLoginForm() {
         document.getElementById('login-form-container').classList.remove('hidden');
     }
@@ -437,7 +479,6 @@
         render();
     }
 
-    // --- Главный Рендер ---
     function render() {
         const authScreen = document.getElementById('auth-screen');
         const headerNav = document.getElementById('header-nav');
@@ -462,13 +503,17 @@
             logoSub.style.textTransform = 'lowercase'; logoSub.style.letterSpacing = 'normal'; logoSub.style.flexDirection = 'column';
         }
 
-        // Блок пользователя
+        // Блок пользователя с кнопкой выхода
         const userInitials = user.name.substring(0, 2).toUpperCase();
         const userRole = (user.role === 'teacher' || user.role === 'admin') ? 'Я — учитель' : 'Я — ученик';
         
         headerUser.innerHTML = `
             <div class="user-role">${userRole}</div>
-            <div class="user-avatar" onclick="switchTab('profile')">${userInitials}</div>
+            <div class="user-avatar" onclick="switchTab('profile')" title="Профиль">${userInitials}</div>
+            <button class="logout-btn" onclick="logout()" title="Выйти из системы">
+                <span class="logout-icon">🚪</span>
+                <span>Выйти</span>
+            </button>
         `;
 
         let navItems = [];
@@ -528,7 +573,6 @@
                         <tr>
                             <th class="corner"></th>
                             <th class="corner"></th>
-                            <!-- Выводим короткие названия с точкой, полные прячем в title -->
                             ${currentWorkTypes.map(wt => `<th class="day-header" title="${wt.f}">${wt.s}</th>`).join('')}
                         </tr>
                         <tr>
@@ -886,7 +930,7 @@
             </div>
             <div class="menu-list">
                 <div class="menu-item"><div class="menu-icon">❓</div><div class="menu-text">Помощь и поддержка</div><div class="menu-arrow">›</div></div>
-                <div class="menu-item" onclick="logout()"><div class="menu-icon">🚪</div><div class="menu-text" style="color:#ee3f58">Выйти</div><div class="menu-arrow">›</div></div>
+                <div class="menu-item" onclick="logout()"><div class="menu-icon">🚪</div><div class="menu-text" style="color:#ee3f58">Выйти из системы</div><div class="menu-arrow">›</div></div>
             </div>
         `;
     }
